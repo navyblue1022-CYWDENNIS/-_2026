@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>震豐化學品互動查詢系統</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei",Roboto,sans-serif;background:#F3F4F6;color:#111827;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.header{text-align:center;padding:20px 0 16px}
+.header h1{font-size:22px;font-weight:700;color:#1E40AF;margin-bottom:4px}
+.header .sub{font-size:13px;color:#6B7280}
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{width:100%;padding:13px 44px 13px 44px;font-size:15px;border:2px solid #D1D5DB;border-radius:12px;outline:none;background:#fff;transition:border-color .2s}
+.search-box input:focus{border-color:#2563EB}
+.search-box .icon-s{position:absolute;left:14px;top:14px;color:#9CA3AF;pointer-events:none}
+.search-box .icon-x{position:absolute;right:10px;top:10px;background:none;border:none;cursor:pointer;color:#9CA3AF;font-size:18px;padding:4px 6px;border-radius:4px}
+.search-box .icon-x:hover{background:#F3F4F6}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.btn-filter{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;border:1px solid #D1D5DB;background:#F9FAFB;color:#374151;transition:all .15s}
+.btn-filter.active{background:#EFF6FF;color:#2563EB;border-color:#BFDBFE}
+.btn-clear{font-size:12px;color:#EF4444;background:none;border:none;cursor:pointer;font-weight:500}
+.btn-clear:hover{text-decoration:underline}
+.count{font-size:13px;color:#6B7280;margin-left:auto}
+.count strong{color:#111827}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:14px;background:#F9FAFB;border-radius:10px;border:1px solid #E5E7EB;margin-bottom:14px}
+.filters label{font-size:11px;font-weight:600;color:#6B7280;display:block;margin-bottom:4px}
+.filters select{width:100%;padding:8px 10px;font-size:13px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;cursor:pointer}
+.card{background:#fff;border:1px solid #E5E7EB;border-radius:12px;margin-bottom:8px;overflow:hidden;transition:box-shadow .2s}
+.card.open{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.card-head{padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none}
+.card-head:hover{background:#FAFBFC}
+.card-info{flex:1;min-width:0}
+.card-tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.tag-cas{font-family:monospace;font-size:13px;color:#6B7280;background:#F9FAFB;padding:2px 8px;border-radius:4px;border:1px solid #E5E7EB;white-space:nowrap}
+.tag-cat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.tag-sys{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600}
+.tag-sys.y{background:#DCFCE7;color:#166534}
+.tag-sys.n{background:#FEF9C3;color:#854D0E}
+.card-name{font-size:15px;font-weight:600;color:#111827}
+.card-en{font-size:12px;color:#6B7280;margin-top:1px}
+.arrow{flex-shrink:0;color:#9CA3AF;font-size:14px;transition:transform .2s}
+.card.open .arrow{transform:rotate(180deg)}
+.card-body{padding:0 18px 16px;border-top:1px solid #F3F4F6}
+.props{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.prop{background:#F9FAFB;border-radius:8px;padding:8px 12px}
+.prop-label{font-size:11px;color:#6B7280;font-weight:500;margin-bottom:2px}
+.prop-val{font-size:13px;color:#111827;font-weight:500;word-break:break-word}
+.empty{text-align:center;padding:40px;color:#9CA3AF}
+.empty svg{margin-bottom:10px;opacity:.5}
+.empty .t1{font-size:15px}
+.empty .t2{font-size:13px;margin-top:4px}
+.pager{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px}
+.pager button{padding:6px 14px;font-size:13px;border-radius:8px;border:1px solid #D1D5DB;background:#fff;color:#374151;cursor:pointer}
+.pager button:disabled{background:#F3F4F6;color:#D1D5DB;cursor:default}
+.pager span{font-size:13px;color:#6B7280}
+.footer{text-align:center;margin-top:20px;padding:12px;font-size:11px;color:#9CA3AF;border-top:1px solid #E5E7EB}
+.stat-bar{display:flex;gap:12px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.stat-item{background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:10px 18px;text-align:center;min-width:100px}
+.stat-num{font-size:20px;font-weight:700;color:#2563EB}
+.stat-label{font-size:11px;color:#6B7280;margin-top:2px}
+@media(max-width:600px){
+  .wrap{padding:10px}
+  .header h1{font-size:18px}
+  .props{grid-template-columns:1fr}
+  .filters{grid-template-columns:1fr}
+  .stat-bar{gap:6px}
+  .stat-item{padding:8px 12px;min-width:80px}
+  .stat-num{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>&#9883; 震豐化學品互動查詢系統</h1>
+    <div class="sub">離線版 v2.0 | 共 <span id="total">0</span> 項產品 | CAS No. / 中英文品名 / 供應商搜尋</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-bar">
+    <div class="stat-item"><div class="stat-num" id="st-total">0</div><div class="stat-label">總品項</div></div>
+    <div class="stat-item"><div class="stat-num" id="st-sys">0</div><div class="stat-label">系統內</div></div>
+    <div class="stat-item"><div class="stat-num" id="st-new">0</div><div class="stat-label">新發現</div></div>
+    <div class="stat-item"><div class="stat-num" id="st-cats">0</div><div class="stat-label">分類數</div></div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <svg class="icon-s" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="searchInput" placeholder="輸入 CAS No.、產品名稱或供應商搜尋...">
+    <button class="icon-x" id="clearSearch" style="display:none">&times;</button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="btn-filter" id="btnFilter">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      篩選條件 <span id="filterBadge" style="display:none;background:#2563EB;color:#fff;border-radius:10px;font-size:11px;padding:1px 6px;font-weight:700"></span>
+    </button>
+    <button class="btn-clear" id="btnClearAll" style="display:none">清除全部</button>
+    <div class="count">找到 <strong id="resultCount">0</strong> 項</div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" id="filterPanel" style="display:none">
+    <div>
+      <label>分類 Category</label>
+      <select id="fCat"><option value="">全部分類</option></select>
+    </div>
+    <div>
+      <label>產業 Industry</label>
+      <select id="fInd"><option value="">全部產業</option></select>
+    </div>
+    <div>
+      <label>系統狀態</label>
+      <select id="fSys">
+        <option value="">全部</option>
+        <option value="Y">系統內 (已建檔)</option>
+        <option value="N">新發現 (待開發)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <!-- Pager -->
+  <div class="pager" id="pager" style="display:none">
+    <button id="prevBtn">上一頁</button>
+    <span id="pageInfo">1 / 1</span>
+    <button id="nextBtn">下一頁</button>
+  </div>
+
+  <div class="footer">震豐股份有限公司 | 化學品資料庫離線版 v2.0 | 資料來源：跨文件交叉比對 + Product Information | 更新日期：2026-04-17</div>
+</div>
+
+<script>
+// === EMBEDDED DATA (211 items, no network needed) ===
+var DATA=[{"c":"000095-14-7","z":"Electronic","e":"","cat":"Unknown","f":"","ph":"","d":"","ti":"","app":"","doc":"CoA, SDS","sys":"N","sup":"Dow","pr":""},{"c":"100-51-6","z":"無氯苯甲醇 Benzyl alcohol","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"100-52-7","z":"無氯苯甲醛 Benzaldehyde","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"100-79-8","z":"Glycasol","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"10028-15-6","z":"氧化型殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"10028-22-5","z":"混凝與沉澱","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"10043-35-3","z":"硼酸/硼砂","e":"Boric Acid (H3BO3)","cat":"Acid","f":"Powder/Granule","ph":"3.8-4.8 (3.3%)","d":"1.435","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS, TDS","sys":"Y","sup":"","pr":"55–80"},{"c":"10043-52-4","z":"特用處理","e":"Calcium Chloride (CaCl2)","cat":"Inorganic Salt","f":"Flake/Liquid","ph":"8.0-9.0 (10%)","d":"2.15","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"CoA, SDS","sys":"Y","sup":"","pr":""},{"c":"10049-04-4","z":"氧化型殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"101-83-7","z":"DCHA (Dicyclohexylamine)","e":"","cat":"胺類防鏽劑","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"Lanxess / Huntsman / 浙江建業","pr":"180–240"},{"c":"10124-56-8","z":"SHMP","e":"SHMP (Sodium Hexametaphosphate)","cat":"Water Treatment","f":"Powder/Flake","ph":"6.0-7.5 (1%)","d":"2.484","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"102-71-6","z":"三乙醇胺 TEA","e":"TEA (Triethanolamine)","cat":"醇胺","f":"Liquid 85-99%","ph":"10.5","d":"1.124","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"Dow / BASF / 南亞","pr":"65–95"},{"c":"10217-52-4","z":"CORRGUARD 90","e":"","cat":"Water Treatment","f":"","ph":"","d":"","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"","sys":"N","sup":"","pr":""},{"c":"10222-01-2","z":"非氧化殺菌","e":"DBNPA (2,2-Dibromo-3-Nitrilopropionamide)","cat":"Biocide","f":"Powder/Liquid 20%","ph":"3.0-5.0","d":"1.1-1.2","ti":"水處理/塗料/MWF/日化","app":"殺菌、防腐、防霉","doc":"CoA, SDS, TDS","sys":"Y","sup":"","pr":"380–540"},{"c":"103-49-1","z":"二卞胺","e":"","cat":"Amine","f":"","ph":"","d":"","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"PDS","sys":"N","sup":"","pr":""},{"c":"103-90-2","z":"原料藥 API","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"104-15-4","z":"PTSA","e":"","cat":"Acid","f":"","ph":"","d":"","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"105-59-9","z":"MDEA","e":"MDEA (N-Methyldiethanolamine)","cat":"Amine","f":"Liquid 99%","ph":"10.5","d":"1.038","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"10534-89-1","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"107-41-5","z":"HEXYLENE GLYCOL SDS","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"107-98-2","z":"PMA / PM (丙二醇甲醚醋酸酯)","e":"","cat":"","f":"","ph":"","d":"","ti":"塗料","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"108-18-9","z":"DIPA","e":"DIPA (Diisopropylamine)","cat":"Amine","f":"Liquid","ph":"12.0","d":"0.722","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"SDS, TDS","sys":"N","sup":"","pr":""},{"c":"108-65-6","z":"DPMA","e":"PMA (Propylene Glycol Methyl Ether Acetate)","cat":"Solvent","f":"Liquid","ph":"N/A","d":"0.965","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"109-66-0","z":"Pentane","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"","sys":"N","sup":"","pr":""},{"c":"109-73-9","z":"正丁安","e":"","cat":"Amine","f":"","ph":"","d":"","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"109-89-7","z":"DEA 二乙胺","e":"DEA (Diethylamine)","cat":"Amine","f":"Liquid","ph":"12.0","d":"0.707","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"110-54-3","z":"Hexane","e":"n-Hexane","cat":"Solvent","f":"Liquid","ph":"N/A","d":"0.659","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"110-91-8","z":"MORPHOLINE","e":"Morpholine","cat":"Amine","f":"Liquid 99%","ph":"9.5-10.5","d":"1.007","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, PDS, SDS","sys":"N","sup":"","pr":""},{"c":"111-40-0","z":"DETA","e":"DETA (Diethylenetriamine)","cat":"Amine","f":"Liquid","ph":"13.0","d":"0.955","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"111-42-2","z":"二乙醇胺 DEA","e":"DEA (Diethanolamine)","cat":"Amine","f":"Liquid/Solid","ph":"11.0","d":"1.097","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, PDS, SDS, TDS","sys":"Y","sup":"Petronas","pr":"80–110"},{"c":"11138-66-2","z":"Xanthan Gum","e":"","cat":"多醣增稠","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"CP Kelco / DuPont / 富祥","pr":"180–260"},{"c":"1115-70-4","z":"原料藥","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"112-24-3","z":"TETA","e":"TETA (Triethylenetetramine)","cat":"Amine","f":"Liquid","ph":"13.0","d":"0.982","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"112-27-6","z":"TEG","e":"TEG (Triethylene Glycol)","cat":"Glycol/Polyol","f":"Liquid","ph":"Neutral","d":"1.125","ti":"個護/食品/製藥/天然氣","app":"保濕、溶劑、甜味劑、脫水","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"112-34-5","z":"DB","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"112945-52-5","z":"Silica (Fumed/Precipitated)","e":"","cat":"無機填料","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Evonik (AEROSIL) / Cabot / 通用矽","pr":"120–220"},{"c":"12125-01-8","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"122-20-3","z":"TIPA 85%","e":"TIPA (Triisopropanolamine)","cat":"Amine","f":"Liquid 85%","ph":"11.0","d":"0.996","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"SDS, TDS","sys":"N","sup":"","pr":""},{"c":"123-31-9","z":"HQ","e":"","cat":"Specialty Chemical","f":"","ph":"","d":"","ti":"電子/聚合物/半導體","app":"特化製程、表面處理","doc":"CoA, PDS","sys":"N","sup":"","pr":""},{"c":"123-94-4","z":"單甘油酯 GMS","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"124-09-4","z":"己二胺","e":"","cat":"Amine","f":"","ph":"","d":"","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"124-68-5","z":"AMP95","e":"AMP-95 (2-Amino-2-methyl-1-propanol)","cat":"Amine","f":"Liquid 95%","ph":"11.3","d":"0.942","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"12645-31-7","z":"PA","e":"","cat":"Acid","f":"","ph":"","d":"","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"PDS, SDS","sys":"N","sup":"","pr":""},{"c":"127-19-5","z":"DMAC","e":"DMAc (Dimethylacetamide)","cat":"Solvent","f":"Liquid 99%","ph":"Neutral","d":"0.937","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"127-40-2","z":"葉黃素 Lutein","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"1303-96-4","z":"Borax","e":"Borax (Sodium Tetraborate)","cat":"Inorganic Salt","f":"Powder/Crystal","ph":"9.2 (1%)","d":"1.73","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"CoA, PDS","sys":"N","sup":"","pr":""},{"c":"1305-62-0","z":"酸鹼調節","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"1310-58-3","z":"CIP鹼洗","e":"Potassium Hydroxide (KOH)","cat":"Base/Alkali","f":"Flake/Liquid 45-90%","ph":"14","d":"1.45-2.04","ti":"全產業(CIP/pH/電子)","app":"中和、清洗、蝕刻","doc":"CoA, TDS","sys":"Y","sup":"","pr":""},{"c":"1310-73-2","z":"液鹼 (Sodium Hydroxide)","e":"Sodium Hydroxide (NaOH)","cat":"Base/Alkali","f":"Flake/Liquid 25-50%","ph":"14","d":"1.25-1.53","ti":"全產業(CIP/pH/電子)","app":"中和、清洗、蝕刻","doc":"SDS","sys":"Y","sup":"","pr":""},{"c":"1313-82-2","z":"特用處理","e":"Sodium Sulfide (Na2S)","cat":"Inorganic Salt","f":"Flake/Liquid","ph":"12.0","d":"1.86","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"SDS, TDS","sys":"Y","sup":"","pr":""},{"c":"1327-41-9","z":"聚合氯化鋁 (PAC)","e":"PAC (Poly Aluminium Chloride)","cat":"","f":"Powder/Liquid","ph":"3.5-5.0","d":"1.15-1.35","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"1330-20-7","z":"Xylene","e":"Xylene (Mixed)","cat":"Solvent","f":"Liquid","ph":"N/A","d":"0.864","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"1332-58-7","z":"Kaolin","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"","sys":"N","sup":"","pr":""},{"c":"1336-21-6","z":"半導體/PCB","e":"Ammonium Hydroxide (NH4OH)","cat":"Base/Alkali","f":"Liquid 25-28%","ph":"11.6","d":"0.90","ti":"全產業(CIP/pH/電子)","app":"中和、清洗、蝕刻","doc":"SDS","sys":"Y","sup":"","pr":""},{"c":"1344-28-1","z":"Aluminum Oxide","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"","sys":"N","sup":"","pr":""},{"c":"13463-67-7","z":"TiO2","e":"Titanium Dioxide (TiO2)","cat":"Inorganic Salt","f":"Powder","ph":"6.5-8.5","d":"3.9-4.2","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"","sys":"N","sup":"","pr":""},{"c":"137-66-6","z":"化妝品活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"139-13-9","z":"清洗助劑","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"141-43-5","z":"單乙醇胺 MEA","e":"MEA (Monoethanolamine)","cat":"醇胺 Alkanolamine","f":"Liquid 99%","ph":"12.0","d":"1.012","ti":"","app":"","doc":"","sys":"Y","sup":"BASF / Dow / Nouryon / 台塑","pr":"55–75"},{"c":"141-53-7","z":"Sodium formate","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"SDS, TDS","sys":"N","sup":"","pr":""},{"c":"141-78-6","z":"EAC","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"","sys":"N","sup":"","pr":""},{"c":"144-55-8","z":"Sodium Bicarbonate","e":"Sodium Bicarbonate (NaHCO3)","cat":"Base/Alkali","f":"Powder","ph":"8.3 (1%)","d":"2.20","ti":"全產業(CIP/pH/電子)","app":"中和、清洗、蝕刻","doc":"TDS","sys":"N","sup":"","pr":""},{"c":"144-62-7","z":"CIP酸洗","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"14667-55-1","z":"DMI","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"149-32-6","z":"甜味劑","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"15630-89-4","z":"Sodium Percarbonate","e":"","cat":"氧化漂白","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Solvay / OCI","pr":"45–75"},{"c":"15827-60-8","z":"阻垢與緩蝕","e":"DTPMPA (Diethylenetriaminepenta Methylenephosphonic Acid)","cat":"Water Treatment","f":"Liquid 50%","ph":"2.0","d":"1.35","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA, SDS, TDS","sys":"Y","sup":"","pr":""},{"c":"16079-88-2","z":"非氧化殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"160875-66-1","z":"PCCPCG","e":"","cat":"Surfactant","f":"","ph":"","d":"","ti":"清洗/農藥/MWF/塗料","app":"乳化、分散、潤濕、消泡","doc":"CoA, SDS, TDS","sys":"N","sup":"Brenntag","pr":""},{"c":"17766-26-6","z":"重金屬捕捉劑 (TMT-15)","e":"TMT-15 (Trimercaptotriazine)","cat":"Water Treatment","f":"Liquid 15%","ph":"10-12","d":"1.10-1.15","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA, PDS, SDS","sys":"Y","sup":"","pr":""},{"c":"181828-06-8","z":"PASP (聚天冬胺酸)","e":"","cat":"綠色阻垢","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"Nanjing SeaSun / Aquapharm","pr":"180–260"},{"c":"24634-61-5","z":"山梨酸鉀","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"25155-30-0","z":"清洗助劑","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"25249-54-1","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"25322-68-3","z":"藥用賦形","e":"PEG (Polyethylene Glycol)","cat":"Glycol/Polyol","f":"Liquid/Wax","ph":"4.5-7.5","d":"1.1-1.2","ti":"個護/食品/製藥/天然氣","app":"保濕、溶劑、甜味劑、脫水","doc":"CoA","sys":"Y","sup":"","pr":""},{"c":"25655-41-8","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"26099-09-2","z":"消泡分散","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"26172-55-4","z":"CMIT/MIT (Kathon)","e":"","cat":"異噻唑啉酮殺菌","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Dow (Kathon) / Lonza / 江蘇聯盟","pr":"520–680"},{"c":"2634-33-5","z":"BIT (Benzisothiazolinone)","e":"BIT (1,2-Benzisothiazolin-3-one)","cat":"Biocide","f":"Liquid 20%","ph":"9.0-11.0","d":"1.05-1.10","ti":"水處理/塗料/MWF/日化","app":"殺菌、防腐、防霉","doc":"CoA, SDS","sys":"Y","sup":"","pr":"450–620"},{"c":"26787-78-0","z":"原料藥","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"2687-91-4","z":"NEP","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"27247-96-7","z":"2-EHN (2-乙基己基硝酸酯)","e":"","cat":"十六烷值改進劑","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"Innospec / BASF / 江蘇豐山","pr":"110–140"},{"c":"2809-21-4","z":"HEDP (1-羥基乙叉二膦酸)","e":"HEDP (1-Hydroxyethylidene-1,1-Diphosphonic Acid)","cat":"膦酸系阻垢","f":"Liquid 60%","ph":"1.5-2.0","d":"1.43-1.47","ti":"水處理","app":"","doc":"","sys":"Y","sup":"Italmatch / Nouryon / 山東泰和","pr":"90–130"},{"c":"2867-47-2","z":"DMBA","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"29385-43-1","z":"甲基苯並三唑 TTA","e":"TTA (Tolyltriazole)","cat":"Water Treatment","f":"Powder/Liquid","ph":"6.0-7.0 (1%)","d":"1.24","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"SDS, TDS","sys":"Y","sup":"","pr":"200–290"},{"c":"302-01-2","z":"鍋爐水處理","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"304-59-6","z":"Potassium Sodium Tartrate","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"CoA, PDS","sys":"N","sup":"","pr":""},{"c":"3710-84-7","z":"鍋爐水處理","e":"","cat":"","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"37971-36-1","z":"阻垢與緩蝕","e":"PBTC (2-Phosphonobutane-1,2,4-Tricarboxylic Acid)","cat":"Water Treatment","f":"Liquid 50%","ph":"2.0-2.5","d":"1.32","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA, SDS, TDS","sys":"Y","sup":"","pr":""},{"c":"40623-75-4","z":"阻垢與緩蝕","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"4435-53-4","z":"MBA","e":"","cat":"Amine","f":"","ph":"","d":"","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"458-37-7","z":"天然色素","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"471-34-1","z":"特用處理","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"4719-04-4","z":"生物殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"4767-03-7","z":"DMPA","e":"","cat":"Specialty Chemical","f":"","ph":"","d":"","ti":"電子/聚合物/半導體","app":"特化製程、表面處理","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"497-19-8","z":"酸鹼調節","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"50-21-5","z":"E270 / 50-21-5","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"50-70-4","z":"Sorbitol","e":"Sorbitol","cat":"Food/Pharma","f":"Powder/Liquid 70%","ph":"5.0-7.0","d":"1.49","ti":"食品/保健/飼料/藥品","app":"營養添加、防腐、甜味","doc":"CoA, SDS","sys":"Y","sup":"","pr":"55–80"},{"c":"50-81-7","z":"維他命","e":"L-Ascorbic Acid (Vitamin C)","cat":"Food/Pharma","f":"Powder","ph":"2.1-2.6 (5%)","d":"1.65","ti":"食品/保健/飼料/藥品","app":"營養添加、防腐、甜味","doc":"CoA, SDS","sys":"Y","sup":"","pr":""},{"c":"51981-21-6","z":"GLDA (Dissolvine GL)","e":"","cat":"Water Treatment","f":"","ph":"","d":"","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA, SDS, TDS","sys":"Y","sup":"","pr":"220–320"},{"c":"527-07-1","z":"Sodium Gluconate","e":"","cat":"螯合","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Jungbunzlauer / 西王","pr":"55–85"},{"c":"532-32-1","z":"苯甲酸鈉","e":"Sodium Benzoate","cat":"Inorganic Salt","f":"Powder/Granule","ph":"8.0 (1%)","d":"1.497","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"SDS, TDS","sys":"Y","sup":"","pr":""},{"c":"5329-14-6","z":"CIP酸洗","e":"Sulfamic Acid","cat":"Acid","f":"Crystal/Powder","ph":"1.0 (1%)","d":"2.126","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, PDS, SDS","sys":"Y","sup":"","pr":""},{"c":"5332-73-0","z":"Fentamine","e":"","cat":"Amine","f":"","ph":"","d":"","ti":"塗料/MWF/天然氣脫硫","app":"pH調整、中和、防鏽、乳化","doc":"CoA, SDS","sys":"N","sup":"BASF","pr":""},{"c":"557-04-0","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"56-81-5","z":"Glycerin USP","e":"Glycerine (Glycerol)","cat":"Glycol/Polyol","f":"Liquid 99.5%","ph":"7.0","d":"1.261","ti":"個護/食品/製藥/天然氣","app":"保濕、溶劑、甜味劑、脫水","doc":"","sys":"N","sup":"","pr":""},{"c":"56038-13-2","z":"甜味劑","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"57-55-6","z":"PG","e":"Propylene Glycol (PG)","cat":"Glycol/Polyol","f":"Liquid 99%","ph":"Neutral","d":"1.036","ti":"個護/食品/製藥/天然氣","app":"保濕、溶劑、甜味劑、脫水","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"57817-89-7","z":"甜味劑","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"59-02-9","z":"抗氧化","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"5989-27-5","z":"D-limone","e":"D-Limonene","cat":"Solvent","f":"Liquid","ph":"N/A","d":"0.842","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"60-00-4","z":"EDTA/EDTA-2Na","e":"","cat":"螯合","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"BASF / AkzoNobel / 江蘇大同","pr":"70–110"},{"c":"6132-04-3","z":"單水檸檬酸鈉","e":"","cat":"Food/Pharma","f":"","ph":"","d":"","ti":"食品/保健/飼料/藥品","app":"營養添加、防腐、甜味","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"61789-40-0","z":"Amphoteric Surfactant (CAPB)","e":"","cat":"兩性界面活性","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Stepan / Clariant / 花王","pr":"95–145"},{"c":"61789-99-3","z":"Refine Lard Oil","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"CoA, TDS","sys":"N","sup":"","pr":""},{"c":"63-42-3","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"63148-62-9","z":"Silicone Defoamer (PDMS)","e":"","cat":"Specialty Chemical","f":"","ph":"","d":"","ti":"電子/聚合物/半導體","app":"特化製程、表面處理","doc":"PDS, SDS","sys":"Y","sup":"","pr":"180–320"},{"c":"64-02-8","z":"CIP鹼洗","e":"EDTA-4Na","cat":"","f":"Powder/Liquid","ph":"11.0 (1%)","d":"1.01","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"64-17-5","z":"Alcohol","e":"","cat":"Alcohol","f":"","ph":"","d":"","ti":"電子/製藥/消毒","app":"溶劑、消毒、萃取","doc":"CoA, SDS","sys":"N","sup":"Brenntag","pr":""},{"c":"64-18-6","z":"FORMIC ACID","e":"Formic Acid (HCOOH)","cat":"Acid","f":"Liquid 85-90%","ph":"2.0","d":"1.22","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, PDS","sys":"N","sup":"","pr":""},{"c":"6419-19-8","z":"ATMP (胺基三亞甲基膦酸)","e":"ATMP (Amino Trimethylene Phosphonic Acid)","cat":"Water Treatment","f":"Liquid 50%","ph":"2.0-2.5","d":"1.28-1.32","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA, TDS","sys":"Y","sup":"","pr":"85–125"},{"c":"64742-04-7","z":"TDAE","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"","sys":"N","sup":"","pr":""},{"c":"64742-47-8","z":"HT","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"CoA, PDS, SDS","sys":"N","sup":"","pr":""},{"c":"64742-48-9","z":"ISOPAR H","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"64742-53-6","z":"Naphthenic","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"PDS","sys":"N","sup":"","pr":""},{"c":"64742-61-6","z":"Sasol","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"PDS, SDS","sys":"N","sup":"","pr":""},{"c":"64742-94-5","z":"Solvesso 150","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"64742-95-6","z":"Solvesso 100","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"","sys":"N","sup":"","pr":""},{"c":"65-85-0","z":"苯甲酸 Benzoic acid","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"67-63-0","z":"半導體/PCB","e":"IPA (Isopropyl Alcohol)","cat":"Solvent","f":"Liquid 99%+","ph":"Neutral","d":"0.786","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS","sys":"Y","sup":"Brenntag","pr":""},{"c":"67-68-5","z":"生技試劑","e":"DMSO (Dimethyl Sulfoxide)","cat":"Solvent","f":"Liquid 99%","ph":"Neutral","d":"1.100","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, TDS","sys":"Y","sup":"","pr":""},{"c":"68-26-8","z":"化妝品活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68002-71-1","z":"SDS","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"SDS","sys":"N","sup":"Shell","pr":""},{"c":"68037-01-4","z":"PAO (Poly Alpha Olefin)","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"SDS, TDS","sys":"Y","sup":"","pr":"160–260"},{"c":"68131-77-1","z":"Kendex 0834","e":"","cat":"Specialty Chemical","f":"","ph":"","d":"","ti":"電子/聚合物/半導體","app":"特化製程、表面處理","doc":"SDS, TDS","sys":"N","sup":"","pr":""},{"c":"68187-30-4","z":"介面活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68412-35-1","z":"摩擦調整","e":"","cat":"","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68424-85-1","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68439-46-3","z":"清洗助劑","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68515-73-1","z":"Alkyl Polyglucoside (APG)","e":"","cat":"非離子界面","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"BASF / Seppic / 江蘇赫利希姆","pr":"180–260"},{"c":"68585-34-2","z":"介面活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"68649-42-3","z":"AW 抗磨","e":"","cat":"","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"69-72-7","z":"Salicylic Acid","e":"Salicylic Acid","cat":"Acid","f":"Powder","ph":"2.4 (sat.)","d":"1.443","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"70356-09-1","z":"防曬活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"70592-80-2","z":"Water Treatment","e":"","cat":"Water Treatment","f":"","ph":"","d":"","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"70693-62-8","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7173-51-5","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7226-23-5","z":"DMPU","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"CoA, SDS, TDS","sys":"N","sup":"","pr":""},{"c":"72623-86-0","z":"Mobil DTE 10 Excel","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"7365-45-9","z":"生技試劑","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7440-44-0","z":"特用處理","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7446-70-0","z":"Aluminium Chloride Anhydrous","e":"Aluminium Chloride Anhydrous (AlCl3)","cat":"Inorganic Salt","f":"Powder/Granule","ph":"2.0-3.0","d":"2.48","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"7447-39-4","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"75-59-2","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"75-75-2","z":"MSA (甲磺酸)","e":"","cat":"綠色酸","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"BASF / Arkema","pr":"180–240"},{"c":"7580-31-6","z":"DEHA 85%","e":"DEHA (Diethylhydroxylamine)","cat":"Water Treatment","f":"Liquid 85%","ph":"10.0","d":"0.86","ti":"水處理/半導體/PCB/冷卻塔","app":"阻垢、緩蝕、殺菌、重金屬捕捉","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"7601-54-9","z":"鍋爐水處理","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7631-90-5","z":"特用處理","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7631-95-0","z":"冷卻水塔","e":"","cat":"","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7647-01-0","z":"半導體/PCB","e":"Hydrochloric Acid (HCl)","cat":"Acid","f":"Liquid 31-37%","ph":"<1","d":"1.16-1.19","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA","sys":"Y","sup":"","pr":""},{"c":"7647-14-5","z":"離子交換/超純水","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7664-38-2","z":"CIP酸洗","e":"Phosphoric Acid (H3PO4)","cat":"Acid","f":"Liquid 75-85%","ph":"1.0","d":"1.58-1.69","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS, TDS","sys":"Y","sup":"Brenntag","pr":""},{"c":"7664-39-3","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7664-93-9","z":"酸鹼調節","e":"Sulfuric Acid (H2SO4)","cat":"Acid","f":"Liquid 93-98%","ph":"<1","d":"1.84","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS","sys":"Y","sup":"Brenntag","pr":""},{"c":"7681-52-9","z":"次氯酸鈉 (Bleach)","e":"Sodium Hypochlorite (NaClO)","cat":"","f":"Liquid 5-12%","ph":"11-13","d":"1.07-1.21","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7681-57-4","z":"阻垢與緩蝕","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7697-37-2","z":"CIP酸洗","e":"Nitric Acid (HNO3)","cat":"Acid","f":"Liquid 60-68%","ph":"<1","d":"1.38-1.42","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS","sys":"Y","sup":"Brenntag","pr":""},{"c":"77-86-1","z":"生技試劑","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"77-92-9","z":"檸檬酸 (Citric Acid)","e":"Citric Acid","cat":"Acid","f":"Crystal/Powder","ph":"1.5-2.5 (1%)","d":"1.665","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, SDS","sys":"Y","sup":"","pr":"28–42"},{"c":"7704-34-9","z":"Sulphur","e":"Sulphur","cat":"Inorganic Salt","f":"Powder/Granule","ph":"N/A","d":"2.07","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"SDS","sys":"N","sup":"","pr":""},{"c":"7722-84-1","z":"雙氧水 (H2O2)","e":"Hydrogen Peroxide (H2O2)","cat":"Specialty Chemical","f":"Liquid 35-50%","ph":"2.0-4.0","d":"1.11-1.20","ti":"電子/聚合物/半導體","app":"特化製程、表面處理","doc":"CoA, SDS","sys":"Y","sup":"Solvay","pr":""},{"c":"7727-54-0","z":"半導體/PCB","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7732-18-5","z":"Biocide","e":"","cat":"Biocide","f":"","ph":"","d":"","ti":"水處理/塗料/MWF/日化","app":"殺菌、防腐、防霉","doc":"CoA, SDS, TDS","sys":"N","sup":"Lanxess","pr":""},{"c":"7757-83-7","z":"鍋爐水處理","e":"","cat":"","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7758-19-2","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7758-29-4","z":"SODIUM TRIPOLYPHOSPHATE","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"","sys":"N","sup":"","pr":""},{"c":"7778-54-3","z":"飲用水","e":"","cat":"","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7778-77-0","z":"Phosphate salt","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"CoA, SDS","sys":"N","sup":"","pr":""},{"c":"7782-63-0","z":"混凝與沉澱","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"7790-92-3","z":"氧化型殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"78-93-3","z":"2 Butonal","e":"MEK (Methyl Ethyl Ketone)","cat":"Solvent","f":"Liquid","ph":"N/A","d":"0.805","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"TDS","sys":"N","sup":"","pr":""},{"c":"79-14-1","z":"CIP酸洗","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"79-21-0","z":"氧化型殺菌","e":"Peracetic Acid (PAA)","cat":"Acid","f":"Liquid 5-15%","ph":"1.0-2.0","d":"1.04-1.13","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"CoA, PDS, SDS","sys":"Y","sup":"Solvay","pr":""},{"c":"79-33-4","z":"食品/環境","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"79-46-9","z":"硝基丙烷 2-NP","e":"","cat":"硝基烷烴","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"ANGUS (Dow) / 日本東亞合成","pr":"240–320"},{"c":"8001-54-5","z":"四級銨 (ADBAC)","e":"","cat":"季銨鹽殺菌","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"Lonza / Stepan / 花王","pr":"120–180"},{"c":"8002-13-9","z":"菜籽油","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"","sys":"N","sup":"","pr":""},{"c":"8002-43-5","z":"大豆卵磷脂","e":"","cat":"","f":"","ph":"","d":"","ti":"食品營養","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"8002-74-2","z":"REACH","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"SDS","sys":"N","sup":"Brenntag, Shell","pr":""},{"c":"8016-70-4","z":"Wax","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"PDS, SDS","sys":"N","sup":"Cargill","pr":""},{"c":"84-69-5","z":"Rhodiasolv DIB","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"PDS, SDS","sys":"N","sup":"","pr":""},{"c":"87-90-1","z":"非氧化殺菌","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9002-07-7","z":"生技試劑","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9002-88-4","z":"PE wax","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"","sys":"N","sup":"","pr":""},{"c":"9003-01-4","z":"Polyacrylic Acid (PAA)","e":"","cat":"聚羧酸分散","f":"","ph":"","d":"","ti":"水處理","app":"","doc":"","sys":"Y","sup":"Dow (Acusol) / BASF (Sokalan) / 長春","pr":"80–150"},{"c":"9003-05-8","z":"混凝與沉澱","e":"PAM (Polyacrylamide)","cat":"","f":"Powder/Emulsion","ph":"7.0-14.0","d":"0.7-0.8","ti":"水處理","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9003-11-6","z":"消泡分散","e":"","cat":"Surfactant","f":"","ph":"","d":"","ti":"清洗/農藥/MWF/塗料","app":"乳化、分散、潤濕、消泡","doc":"SDS","sys":"Y","sup":"","pr":""},{"c":"9003-39-8","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9004-34-6","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9004-65-3","z":"藥用賦形","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9016-45-9","z":"清洗助劑","e":"","cat":"","f":"","ph":"","d":"","ti":"","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9036-19-5","z":"SOPROPHOR 3D33","e":"","cat":"Surfactant","f":"","ph":"","d":"","ti":"清洗/農藥/MWF/塗料","app":"乳化、分散、潤濕、消泡","doc":"CoA","sys":"N","sup":"","pr":""},{"c":"9048-46-8","z":"生技試劑","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"9067-32-7","z":"化妝品活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"95-14-7","z":"苯並三唑 BTA","e":"","cat":"銅緩蝕劑","f":"","ph":"","d":"","ti":"金屬加工液","app":"","doc":"","sys":"Y","sup":"Wincom / PMC / 江蘇成海","pr":"180–260"},{"c":"95481-62-2","z":"DBE","e":"","cat":"Solvent","f":"","ph":"","d":"","ti":"塗料/印刷/電子/清洗","app":"溶解、稀釋、清洗、萃取","doc":"","sys":"N","sup":"SK","pr":""},{"c":"96-05-9","z":"AMA ( CN)","e":"","cat":"Unknown","f":"","ph":"","d":"","ti":"","app":"","doc":"SDS, TDS","sys":"N","sup":"","pr":""},{"c":"96-48-0","z":"GPL","e":"","cat":"Oil/Lubricant","f":"","ph":"","d":"","ti":"金屬加工/橡膠/潤滑油/食品","app":"基礎油、潤滑、加工助劑","doc":"TDS","sys":"N","sup":"","pr":""},{"c":"98-67-9","z":"PHENOL SULFONIC ACID","e":"","cat":"Acid","f":"","ph":"","d":"","ti":"CIP清洗/電子/水處理/食品","app":"酸洗、蝕刻、pH調節、除鏽","doc":"PDS, SDS","sys":"N","sup":"","pr":""},{"c":"98-92-0","z":"化妝品活性","e":"","cat":"","f":"","ph":"","d":"","ti":"生技/個護","app":"","doc":"","sys":"Y","sup":"","pr":""},{"c":"999-97-3","z":"HEXAMETHYLDISILAZANE","e":"","cat":"Inorganic Salt","f":"","ph":"","d":"","ti":"電鍍/玻璃/清洗/水處理","app":"配方原料、螯合、緩衝","doc":"SDS, TDS","sys":"N","sup":"","pr":""}];
+
+// === APPLICATION LOGIC ===
+var state = { search: "", cat: "", ind: "", sys: "", page: 0, expanded: null, showFilters: false };
+var PAGE_SIZE = 30;
+
+// Build category and industry lists
+var cats = {};
+var inds = {};
+DATA.forEach(function(d) {
+  if (d.cat) cats[d.cat] = 1;
+  if (d.ti) d.ti.split("/").forEach(function(i) { if (i) inds[i] = 1; });
+});
+var catList = Object.keys(cats).sort();
+var indList = Object.keys(inds).sort();
+
+// Populate dropdowns
+var fCat = document.getElementById("fCat");
+catList.forEach(function(c) { var o = document.createElement("option"); o.value = c; o.textContent = c; fCat.appendChild(o); });
+var fInd = document.getElementById("fInd");
+indList.forEach(function(i) { var o = document.createElement("option"); o.value = i; o.textContent = i; fInd.appendChild(o); });
+
+// Stats
+var sysCount = DATA.filter(function(d) { return d.sys === "Y"; }).length;
+var newCount = DATA.filter(function(d) { return d.sys === "N"; }).length;
+document.getElementById("total").textContent = DATA.length;
+document.getElementById("st-total").textContent = DATA.length;
+document.getElementById("st-sys").textContent = sysCount;
+document.getElementById("st-new").textContent = newCount;
+document.getElementById("st-cats").textContent = catList.length;
+
+// Badge colors
+var BADGE = {
+  "Acid":{bg:"#FEF2F2",t:"#991B1B",b:"#FECACA"},"Amine":{bg:"#EFF6FF",t:"#1E40AF",b:"#BFDBFE"},
+  "Base/Alkali":{bg:"#F0FDF4",t:"#166534",b:"#BBF7D0"},"Biocide":{bg:"#FFF7ED",t:"#9A3412",b:"#FED7AA"},
+  "Food/Pharma":{bg:"#FEFCE8",t:"#854D0E",b:"#FEF08A"},"Glycol/Polyol":{bg:"#F5F3FF",t:"#5B21B6",b:"#DDD6FE"},
+  "Inorganic Salt":{bg:"#F0FDFA",t:"#115E59",b:"#99F6E4"},"Oil/Lubricant":{bg:"#FFFBEB",t:"#92400E",b:"#FDE68A"},
+  "Solvent":{bg:"#EEF2FF",t:"#3730A3",b:"#C7D2FE"},"Specialty Chemical":{bg:"#FDF4FF",t:"#86198F",b:"#F5D0FE"},
+  "Surfactant":{bg:"#F0F9FF",t:"#075985",b:"#BAE6FD"},"Water Treatment":{bg:"#ECFDF5",t:"#065F46",b:"#A7F3D0"}
+};
+var BADGE_DEFAULT = {bg:"#F3F4F6",t:"#374151",b:"#D1D5DB"};
+
+function filter() {
+  var s = state.search.toLowerCase().trim();
+  return DATA.filter(function(d) {
+    if (s) {
+      var ok = d.c.toLowerCase().indexOf(s) >= 0 || (d.z||"").toLowerCase().indexOf(s) >= 0 || (d.e||"").toLowerCase().indexOf(s) >= 0 || (d.sup||"").toLowerCase().indexOf(s) >= 0;
+      if (!ok) return false;
+    }
+    if (state.cat && d.cat !== state.cat) return false;
+    if (state.ind && (d.ti||"").indexOf(state.ind) < 0) return false;
+    if (state.sys === "Y" && d.sys !== "Y") return false;
+    if (state.sys === "N" && d.sys !== "N") return false;
+    return true;
+  });
+}
+
+function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+function propHtml(label, val) {
+  if (!val) return "";
+  return '<div class="prop"><div class="prop-label">' + esc(label) + '</div><div class="prop-val">' + esc(val) + '</div></div>';
+}
+
+function render() {
+  var results = filter();
+  var totalPages = Math.ceil(results.length / PAGE_SIZE) || 1;
+  if (state.page >= totalPages) state.page = totalPages - 1;
+  if (state.page < 0) state.page = 0;
+  var start = state.page * PAGE_SIZE;
+  var paged = results.slice(start, start + PAGE_SIZE);
+
+  document.getElementById("resultCount").textContent = results.length;
+
+  // Active filters badge
+  var af = [state.cat, state.ind, state.sys].filter(Boolean).length;
+  var badge = document.getElementById("filterBadge");
+  badge.style.display = af > 0 ? "inline" : "none";
+  badge.textContent = af;
+  document.getElementById("btnClearAll").style.display = af > 0 ? "inline" : "none";
+  document.getElementById("btnFilter").className = state.showFilters ? "btn-filter active" : "btn-filter";
+  document.getElementById("filterPanel").style.display = state.showFilters ? "grid" : "none";
+
+  // Cards
+  var html = "";
+  if (paged.length === 0) {
+    html = '<div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><div class="t1">查無符合條件的產品</div><div class="t2">請調整搜尋關鍵字或篩選條件</div></div>';
+  } else {
+    paged.forEach(function(d) {
+      var isOpen = state.expanded === d.c;
+      var b = BADGE[d.cat] || BADGE_DEFAULT;
+      var catTag = d.cat ? '<span class="tag-cat" style="background:'+b.bg+';color:'+b.t+';border:1px solid '+b.b+'">' + esc(d.cat) + '</span>' : "";
+      var sysTag = d.sys === "Y" ? '<span class="tag-sys y">系統內</span>' : '<span class="tag-sys n">新發現</span>';
+      var enLine = d.e ? '<div class="card-en">' + esc(d.e) + '</div>' : "";
+
+      html += '<div class="card' + (isOpen ? " open" : "") + '" data-cas="' + d.c + '">';
+      html += '<div class="card-head" data-cas="' + d.c + '">';
+      html += '<div class="card-info"><div class="card-tags"><span class="tag-cas">' + esc(d.c) + '</span>' + catTag + sysTag + '</div>';
+      html += '<div class="card-name">' + esc(d.z || "—") + '</div>' + enLine + '</div>';
+      html += '<div class="arrow">&#9660;</div></div>';
+
+      if (isOpen) {
+        html += '<div class="card-body"><div class="props">';
+        html += propHtml("型態 Form", d.f);
+        html += propHtml("pH", d.ph);
+        html += propHtml("密度 Density", d.d);
+        html += propHtml("目標產業", d.ti);
+        html += propHtml("應用", d.app);
+        html += propHtml("文件", d.doc);
+        html += propHtml("供應商", d.sup);
+        html += propHtml("參考價 NT$/kg", d.pr);
+        html += '</div></div>';
+      }
+      html += '</div>';
+    });
+  }
+  document.getElementById("results").innerHTML = html;
+
+  // Pager
+  var pagerEl = document.getElementById("pager");
+  if (totalPages > 1) {
+    pagerEl.style.display = "flex";
+    document.getElementById("pageInfo").textContent = (state.page + 1) + " / " + totalPages;
+    document.getElementById("prevBtn").disabled = state.page === 0;
+    document.getElementById("nextBtn").disabled = state.page >= totalPages - 1;
+  } else {
+    pagerEl.style.display = "none";
+  }
+}
+
+// Event listeners
+document.getElementById("searchInput").addEventListener("input", function(e) {
+  state.search = e.target.value;
+  state.page = 0;
+  state.expanded = null;
+  document.getElementById("clearSearch").style.display = e.target.value ? "block" : "none";
+  render();
+});
+
+document.getElementById("clearSearch").addEventListener("click", function() {
+  state.search = "";
+  state.page = 0;
+  document.getElementById("searchInput").value = "";
+  document.getElementById("clearSearch").style.display = "none";
+  render();
+});
+
+document.getElementById("btnFilter").addEventListener("click", function() {
+  state.showFilters = !state.showFilters;
+  render();
+});
+
+document.getElementById("btnClearAll").addEventListener("click", function() {
+  state.cat = ""; state.ind = ""; state.sys = ""; state.page = 0;
+  document.getElementById("fCat").value = "";
+  document.getElementById("fInd").value = "";
+  document.getElementById("fSys").value = "";
+  render();
+});
+
+document.getElementById("fCat").addEventListener("change", function(e) { state.cat = e.target.value; state.page = 0; render(); });
+document.getElementById("fInd").addEventListener("change", function(e) { state.ind = e.target.value; state.page = 0; render(); });
+document.getElementById("fSys").addEventListener("change", function(e) { state.sys = e.target.value; state.page = 0; render(); });
+
+document.getElementById("prevBtn").addEventListener("click", function() { if (state.page > 0) { state.page--; state.expanded = null; render(); window.scrollTo(0, 0); } });
+document.getElementById("nextBtn").addEventListener("click", function() { state.page++; state.expanded = null; render(); window.scrollTo(0, 0); });
+
+// Card click delegation
+document.getElementById("results").addEventListener("click", function(e) {
+  var head = e.target.closest(".card-head");
+  if (!head) return;
+  var cas = head.getAttribute("data-cas");
+  state.expanded = state.expanded === cas ? null : cas;
+  render();
+});
+
+// Keyboard shortcut: Escape to clear search
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    state.search = ""; state.page = 0;
+    document.getElementById("searchInput").value = "";
+    document.getElementById("clearSearch").style.display = "none";
+    render();
+  }
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
