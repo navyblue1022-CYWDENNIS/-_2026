@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
+<html lang="zh-TW"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>震豐化學品互動查詢系統 v5.0</title>
@@ -423,8 +422,361 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft Jh
 
 
 </style>
-</head>
-<body>
+<style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0% {
+          box-shadow: 
+            inset 0 0 10px rgba(217, 119, 87, 0.5),
+            inset 0 0 20px rgba(217, 119, 87, 0.3),
+            inset 0 0 30px rgba(217, 119, 87, 0.1);
+        }
+        50% {
+          box-shadow: 
+            inset 0 0 15px rgba(217, 119, 87, 0.7),
+            inset 0 0 25px rgba(217, 119, 87, 0.5),
+            inset 0 0 35px rgba(217, 119, 87, 0.2);
+        }
+        100% {
+          box-shadow: 
+            inset 0 0 10px rgba(217, 119, 87, 0.5),
+            inset 0 0 20px rgba(217, 119, 87, 0.3),
+            inset 0 0 30px rgba(217, 119, 87, 0.1);
+        }
+      }
+    </style><style id="ui-v5-styles">
+/* ── 固定頂部採購操作列 ── */
+#sticky-procure-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(15, 41, 82, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 6px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.25);
+}
+
+/* 左側品牌標記 */
+#sticky-procure-bar .spb-brand {
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-right: 4px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 比較計數器 */
+#sticky-procure-bar .spb-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 8px;
+  padding: 4px 12px;
+  color: rgba(255,255,255,.85);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+#sticky-procure-bar .spb-counter .cnt-num {
+  color: #FCD34D;
+  font-size: 15px;
+  font-weight: 900;
+  min-width: 14px;
+  text-align: center;
+}
+
+/* 操作按鈕 */
+.spb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .15s ease;
+  white-space: nowrap;
+  letter-spacing: .2px;
+}
+.spb-btn:hover { transform: translateY(-1px); }
+.spb-btn:active { transform: translateY(0); }
+.spb-btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+
+.spb-btn-compare {
+  background: linear-gradient(135deg, #F59E0B, #FCD34D);
+  color: #1F2937;
+  box-shadow: 0 2px 8px rgba(245,158,11,.35);
+}
+.spb-btn-compare:hover:not(:disabled) { box-shadow: 0 4px 14px rgba(245,158,11,.5); }
+
+.spb-btn-csv {
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.2) !important;
+}
+.spb-btn-csv:hover { background: rgba(255,255,255,.2); }
+
+.spb-btn-inquiry {
+  background: linear-gradient(135deg, #3B82F6, #60A5FA);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(59,130,246,.35);
+}
+.spb-btn-inquiry:hover { box-shadow: 0 4px 14px rgba(59,130,246,.5); }
+
+.spb-btn-clear {
+  background: none;
+  color: rgba(255,255,255,.45);
+  border: 1px solid rgba(255,255,255,.15) !important;
+  padding: 5px 10px;
+  font-size: 11px;
+}
+.spb-btn-clear:hover { color: #FCA5A5; border-color: rgba(252,165,165,.4) !important; }
+
+/* 分隔線 */
+.spb-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,.12);
+  margin: 0 2px;
+}
+
+/* 右側搜尋結果摘要 */
+#sticky-procure-bar .spb-summary {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  white-space: nowrap;
+}
+#sticky-procure-bar .spb-summary strong {
+  color: #60A5FA;
+  font-size: 14px;
+}
+
+/* ── 篩選條件區重設計 ── */
+.filter-panel-v5 {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.filter-panel-v5 .fp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.filter-panel-v5 .fp-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1F2937;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.filter-panel-v5 .fp-clear {
+  font-size: 11px;
+  color: #EF4444;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid #FECACA;
+  background: #FEF2F2;
+  transition: all .15s;
+}
+.filter-panel-v5 .fp-clear:hover { background: #EF4444; color: #fff; }
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.filter-row:last-child { margin-bottom: 0; }
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.filter-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.filter-select-v5 {
+  padding: 8px 10px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid #E5E7EB;
+  background: #FAFAFA;
+  color: #374151;
+  cursor: pointer;
+  transition: all .15s;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.filter-select-v5:focus {
+  border-color: #3B82F6;
+  background-color: #EFF6FF;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+.filter-select-v5.has-value {
+  border-color: #3B82F6;
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+}
+
+/* 法規快速篩選 pills */
+.reg-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.reg-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.reg-pill:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.rp-all  { background:#F9FAFB; color:#374151; border-color:#D1D5DB; }
+.rp-tox1 { background:#FFF1F2; color:#9F1239; border-color:#FECDD3; }
+.rp-tox2 { background:#FFF7ED; color:#9A3412; border-color:#FED7AA; }
+.rp-tox3 { background:#FFFBEB; color:#92400E; border-color:#FDE68A; }
+.rp-tox4 { background:#F5F3FF; color:#5B21B6; border-color:#DDD6FE; }
+.rp-existing { background:#F0FDF4; color:#166534; border-color:#BBF7D0; }
+.reg-pill.active { color:#fff !important; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.2); }
+.rp-all.active  { background:#374151 !important; border-color:#374151 !important; }
+.rp-tox1.active { background:#9F1239 !important; border-color:#9F1239 !important; }
+.rp-tox2.active { background:#9A3412 !important; border-color:#9A3412 !important; }
+.rp-tox3.active { background:#B45309 !important; border-color:#B45309 !important; }
+.rp-tox4.active { background:#5B21B6 !important; border-color:#5B21B6 !important; }
+.rp-existing.active { background:#166534 !important; border-color:#166534 !important; }
+
+/* 結果列 toolbar */
+.results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.results-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.results-count-badge .rc-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.results-count-badge .rc-label {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 600;
+}
+.results-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.results-sort-label {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 600;
+}
+.sort-btn-group {
+  display: flex;
+  border: 1px solid #E5E7EB;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.sort-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  background: white;
+  border: none;
+  border-right: 1px solid #E5E7EB;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.sort-btn:last-child { border-right: none; }
+.sort-btn:hover { background: #F1F5FF; color: var(--primary); }
+.sort-btn.active { background: var(--primary); color: white; }
+
+/* 隱藏舊的 toolbar 元素 */
+.toolbar { display: none !important; }
+</style><style>
+  /* 舊的 toolbar、rc、bf 隱藏（由新版取代） */
+  .toolbar, #fp { display: none !important; }
+  /* 調整搜尋框間距 */
+  .search-area, .search { margin-bottom: 10px !important; }
+  /* 主容器最大寬度 */
+  .main, main, .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+  /* sticky bar 不在 main 內（在 body 層），調整 z-index */
+  #sticky-procure-bar { position: sticky; top: 0; z-index: 500; }
+  /* filter panel 在 搜尋框之後、results 之前 */
+  #filter-panel-v5 { margin-bottom: 10px; }
+  /* results-toolbar */
+  #results-toolbar-v5 { margin-bottom: 12px; }
+  /* 隱藏原始 rc span（由新版取代） */
+  .rc-wrap, [id="rc"] { display: none !important; }
+
+  /* sticky bar 緊接在 stats 下方 */
+  .stats + #sticky-procure-bar,
+  .stats-bar + #sticky-procure-bar {
+    margin-top: 0 !important;
+  }
+
+  /* 搜尋框容器統一樣式 */
+  .search-container, .search-wrap {
+    padding: 16px 20px 0;
+  }
+
+  /* 整體 body padding */
+  body > div > .search-box,
+  body > div > .search {
+    margin-top: 12px;
+  }
+</style></head>
+<body data-new-gr-c-s-check-loaded="14.1284.0" data-gr-ext-installed="">
 
 
 <div class="hero">
@@ -433,51 +785,129 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft Jh
 </div>
 
 <div class="wrap">
-  <div class="stats">
-    <div class="stat-card"><div class="stat-num" id="st0">211</div><div class="stat-label">總品項數</div></div>
-    <div class="stat-card"><div class="stat-num" id="st1">29</div><div class="stat-label">產品分類</div></div>
-    <div class="stat-card"><div class="stat-num" id="st2" style="color: rgb(220, 38, 38);">33</div><div class="stat-label">毒化物管制品項</div></div>
-    <div class="stat-card"><div class="stat-num" id="st3" style="color: rgb(124, 58, 237);">90</div><div class="stat-label">既有化學物質</div></div>
-  </div>
+  
 
-  <div class="search-wrap">
-    <div class="search-box">
-      <svg class="s-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <input type="text" id="si" placeholder="搜尋 CAS No.、中文品名、英文名稱、供應商...">
-      <button class="x-btn" id="xb">×</button>
-    </div>
-  </div>
+  
 
-  <div id="procure-bar"><span class="pb-label">📋 採購工具列</span><div id="compare-count"><span class="cnt" id="cmp-cnt">0</span> / 5 項比較清單</div><button class="pb-btn pb-btn-primary" id="btn-compare" disabled="" onclick="openCompareModal()">⚖️ 開始比較</button><button class="pb-btn pb-btn-secondary" id="btn-export-csv" onclick="exportCSV()">📥 匯出 CSV</button><button class="pb-btn pb-btn-secondary" id="btn-inquiry-all" onclick="inquiryAll()">📩 批量詢價</button><button class="pb-btn pb-btn-secondary" onclick="clearCompare()" style="margin-left:auto;">✕ 清除比較</button></div><div class="toolbar">
-    <button class="btn" id="bf">
+  <div class="toolbar" style="display: none !important;">
+    <button class="btn" id="bf" hidden="" style="display: none !important;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
       篩選條件 <span class="badge" id="fb" style="display: none;">0</span>
     </button>
     <button class="btn-clear" id="bc" style="display: none;">清除全部篩選</button>
-    <div class="count">找到 <strong id="rc">211</strong> 項結果</div>
+    <div class="count" style="display: none;">找到 <strong id="rc">211</strong> 項結果</div>
   </div>
 
-  <div class="filters" id="fp">
+  <div class="filters" id="fp" style="display: none !important;">
     <div>
       <label>分類 Category</label>
-      <select id="fC"><option value="">— 全部分類 —</option><option value="Acid">Acid</option><option value="Alcohol">Alcohol</option><option value="Amine">Amine</option><option value="Base/Alkali">Base/Alkali</option><option value="Biocide">Biocide</option><option value="Food/Pharma">Food/Pharma</option><option value="Glycol/Polyol">Glycol/Polyol</option><option value="Inorganic Salt">Inorganic Salt</option><option value="Oil/Lubricant">Oil/Lubricant</option><option value="Solvent">Solvent</option><option value="Specialty Chemical">Specialty Chemical</option><option value="Surfactant">Surfactant</option><option value="Water Treatment">Water Treatment</option><option value="兩性界面活性">兩性界面活性</option><option value="十六烷值改進劑">十六烷值改進劑</option><option value="多醣增稠">多醣增稠</option><option value="季銨鹽殺菌">季銨鹽殺菌</option><option value="氧化漂白">氧化漂白</option><option value="無機填料">無機填料</option><option value="異噻唑啉酮殺菌">異噻唑啉酮殺菌</option><option value="硝基烷烴">硝基烷烴</option><option value="綠色酸">綠色酸</option><option value="綠色阻垢">綠色阻垢</option><option value="聚羧酸分散">聚羧酸分散</option><option value="胺類防鏽劑">胺類防鏽劑</option><option value="膦酸系阻垢">膦酸系阻垢</option><option value="螯合">螯合</option><option value="銅緩蝕劑">銅緩蝕劑</option><option value="非離子界面">非離子界面</option></select>
+      <select id="fC"><option value="">— 全部分類 —</option><option value="Acid">Acid</option><option value="Alcohol">Alcohol</option><option value="Amine">Amine</option><option value="Base/Alkali">Base/Alkali</option><option value="Biocide">Biocide</option><option value="Food/Pharma">Food/Pharma</option><option value="Glycol/Polyol">Glycol/Polyol</option><option value="Inorganic Salt">Inorganic Salt</option><option value="Oil/Lubricant">Oil/Lubricant</option><option value="Solvent">Solvent</option><option value="Specialty Chemical">Specialty Chemical</option><option value="Surfactant">Surfactant</option><option value="Water Treatment">Water Treatment</option><option value="兩性界面活性">兩性界面活性</option><option value="十六烷值改進劑">十六烷值改進劑</option><option value="多醣增稠">多醣增稠</option><option value="季銨鹽殺菌">季銨鹽殺菌</option><option value="氧化漂白">氧化漂白</option><option value="無機填料">無機填料</option><option value="異噻唑啉酮殺菌">異噻唑啉酮殺菌</option><option value="硝基烷烴">硝基烷烴</option><option value="綠色酸">綠色酸</option><option value="綠色阻垢">綠色阻垢</option><option value="聚羧酸分散">聚羧酸分散</option><option value="胺類防鏽劑">胺類防鏽劑</option><option value="膦酸系阻垢">膦酸系阻垢</option><option value="螯合">螯合</option><option value="銅緩蝕劑">銅緩蝕劑</option><option value="非離子界面">非離子界面</option><option value="Acid">Acid</option><option value="Alcohol">Alcohol</option><option value="Amine">Amine</option><option value="Base/Alkali">Base/Alkali</option><option value="Biocide">Biocide</option><option value="Food/Pharma">Food/Pharma</option><option value="Glycol/Polyol">Glycol/Polyol</option><option value="Inorganic Salt">Inorganic Salt</option><option value="Oil/Lubricant">Oil/Lubricant</option><option value="Solvent">Solvent</option><option value="Specialty Chemical">Specialty Chemical</option><option value="Surfactant">Surfactant</option><option value="Water Treatment">Water Treatment</option><option value="兩性界面活性">兩性界面活性</option><option value="十六烷值改進劑">十六烷值改進劑</option><option value="多醣增稠">多醣增稠</option><option value="季銨鹽殺菌">季銨鹽殺菌</option><option value="氧化漂白">氧化漂白</option><option value="無機填料">無機填料</option><option value="異噻唑啉酮殺菌">異噻唑啉酮殺菌</option><option value="硝基烷烴">硝基烷烴</option><option value="綠色酸">綠色酸</option><option value="綠色阻垢">綠色阻垢</option><option value="聚羧酸分散">聚羧酸分散</option><option value="胺類防鏽劑">胺類防鏽劑</option><option value="膦酸系阻垢">膦酸系阻垢</option><option value="螯合">螯合</option><option value="銅緩蝕劑">銅緩蝕劑</option><option value="非離子界面">非離子界面</option></select>
     </div>
     <div>
       <label>目標產業 Industry</label>
-      <select id="fI"><option value="">— 全部產業 —</option><option value="CIP清洗">CIP清洗</option><option value="CO2捕集">CO2捕集</option><option value="MWF">MWF</option><option value="PCB">PCB</option><option value="pH">pH</option><option value="保健">保健</option><option value="個護">個護</option><option value="全產業(CIP">全產業(CIP</option><option value="冷卻塔">冷卻塔</option><option value="半導體">半導體</option><option value="印刷">印刷</option><option value="塗料">塗料</option><option value="天然氣">天然氣</option><option value="天然氣脫硫">天然氣脫硫</option><option value="日化">日化</option><option value="橡膠">橡膠</option><option value="水處理">水處理</option><option value="消毒">消毒</option><option value="清洗">清洗</option><option value="潤滑油">潤滑油</option><option value="玻璃">玻璃</option><option value="生技">生技</option><option value="聚合物">聚合物</option><option value="藥品">藥品</option><option value="製藥">製藥</option><option value="農藥">農藥</option><option value="金屬加工">金屬加工</option><option value="金屬加工液">金屬加工液</option><option value="電子">電子</option><option value="電子)">電子)</option><option value="電鍍">電鍍</option><option value="食品">食品</option><option value="食品營養">食品營養</option><option value="飼料">飼料</option></select>
+      <select id="fI"><option value="">— 全部產業 —</option><option value="CIP清洗">CIP清洗</option><option value="CO2捕集">CO2捕集</option><option value="MWF">MWF</option><option value="PCB">PCB</option><option value="pH">pH</option><option value="保健">保健</option><option value="個護">個護</option><option value="全產業(CIP">全產業(CIP</option><option value="冷卻塔">冷卻塔</option><option value="半導體">半導體</option><option value="印刷">印刷</option><option value="塗料">塗料</option><option value="天然氣">天然氣</option><option value="天然氣脫硫">天然氣脫硫</option><option value="日化">日化</option><option value="橡膠">橡膠</option><option value="水處理">水處理</option><option value="消毒">消毒</option><option value="清洗">清洗</option><option value="潤滑油">潤滑油</option><option value="玻璃">玻璃</option><option value="生技">生技</option><option value="聚合物">聚合物</option><option value="藥品">藥品</option><option value="製藥">製藥</option><option value="農藥">農藥</option><option value="金屬加工">金屬加工</option><option value="金屬加工液">金屬加工液</option><option value="電子">電子</option><option value="電子)">電子)</option><option value="電鍍">電鍍</option><option value="食品">食品</option><option value="食品營養">食品營養</option><option value="飼料">飼料</option><option value="CIP清洗">CIP清洗</option><option value="CO2捕集">CO2捕集</option><option value="MWF">MWF</option><option value="PCB">PCB</option><option value="pH">pH</option><option value="保健">保健</option><option value="個護">個護</option><option value="全產業(CIP">全產業(CIP</option><option value="冷卻塔">冷卻塔</option><option value="半導體">半導體</option><option value="印刷">印刷</option><option value="塗料">塗料</option><option value="天然氣">天然氣</option><option value="天然氣脫硫">天然氣脫硫</option><option value="日化">日化</option><option value="橡膠">橡膠</option><option value="水處理">水處理</option><option value="消毒">消毒</option><option value="清洗">清洗</option><option value="潤滑油">潤滑油</option><option value="玻璃">玻璃</option><option value="生技">生技</option><option value="聚合物">聚合物</option><option value="藥品">藥品</option><option value="製藥">製藥</option><option value="農藥">農藥</option><option value="金屬加工">金屬加工</option><option value="金屬加工液">金屬加工液</option><option value="電子">電子</option><option value="電子)">電子)</option><option value="電鍍">電鍍</option><option value="食品">食品</option><option value="食品營養">食品營養</option><option value="飼料">飼料</option></select>
     </div>
   </div>
 
-  <div id="res"><div class="card" data-c="000095-14-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">000095-14-7</span><div class="card-name">電子級化學品</div><div class="card-en">Electronic Grade Chemical</div></div><div class="card" data-c="100-51-6"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">100-51-6</span><div class="card-name">苯甲醇</div><div class="card-en">Benzyl Alcohol</div></div><div class="card" data-c="100-52-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">100-52-7</span><div class="card-name">苯甲醛</div><div class="card-en">Benzaldehyde</div></div><div class="card" data-c="100-79-8"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">100-79-8</span><div class="card-name">甘油縮甲醛</div><div class="card-en">Glycasol (Glycerol Formal)</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="10028-15-6"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10028-15-6</span><div class="card-name">臭氧</div><div class="card-en">Ozone (O3)</div></div><div class="card" data-c="10028-22-5"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10028-22-5</span><div class="card-name">硫酸鐵</div><div class="card-en">Ferric Sulfate (Fe2(SO4)3)</div></div><div class="card" data-c="10043-35-3"><div class="card-icon" style="background:linear-gradient(135deg,#DC2626,#991B1B)">酸</div><span class="tag-cas">10043-35-3</span><div class="card-name">硼酸</div><div class="card-en">Boric Acid (H3BO3)</div><span class="tag-cat" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA">Acid</span></div><div class="card" data-c="10043-52-4"><div class="card-icon" style="background:linear-gradient(135deg,#0D9488,#115E59)">鹽</div><span class="tag-cas">10043-52-4</span><div class="card-name">氯化鈣</div><div class="card-en">Calcium Chloride (CaCl2)</div><span class="tag-cat" style="background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">Inorganic Salt</span></div><div class="card" data-c="10049-04-4"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10049-04-4</span><div class="card-name">二氧化氯</div><div class="card-en">Chlorine Dioxide (ClO2)</div></div><div class="card" data-c="101-83-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">胺</div><span class="tag-cas">101-83-7</span><div class="card-name">二環己胺</div><div class="card-en">DCHA (Dicyclohexylamine)</div><span class="tag-cat" style="background:#F3F4F6;color:#374151;border:1px solid #D1D5DB">胺類防鏽劑</span></div><div class="card" data-c="10124-56-8"><div class="card-icon" style="background:linear-gradient(135deg,#059669,#065F46)">水</div><span class="tag-cas">10124-56-8</span><div class="card-name">六偏磷酸鈉</div><div class="card-en">SHMP (Sodium Hexametaphosphate)</div><span class="tag-cat" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0">Water Treatment</span></div><div class="card" data-c="102-71-6"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">102-71-6</span><div class="card-name">三乙醇胺</div><div class="card-en">TEA (Triethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="10217-52-4"><div class="card-icon" style="background:linear-gradient(135deg,#059669,#065F46)">水</div><span class="tag-cas">10217-52-4</span><div class="card-name">聯氨衍生物緩蝕劑</div><div class="card-en">CORRGUARD 90 (Hydrazine Derivative)</div><span class="tag-cat" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0">Water Treatment</span></div><div class="card" data-c="10222-01-2"><div class="card-icon" style="background:linear-gradient(135deg,#EA580C,#9A3412)">殺</div><span class="tag-cas">10222-01-2</span><div class="card-name">二溴硝基丙醯胺</div><div class="card-en">DBNPA (2,2-Dibromo-3-Nitrilopropionamide)</div><span class="tag-cat" style="background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">Biocide</span></div><div class="card" data-c="103-49-1"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">103-49-1</span><div class="card-name">二苄胺</div><div class="card-en">Dibenzylamine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="103-90-2"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">103-90-2</span><div class="card-name">乙醯胺酚</div><div class="card-en">Acetaminophen (Paracetamol)</div></div><div class="card" data-c="104-15-4"><div class="card-icon" style="background:linear-gradient(135deg,#DC2626,#991B1B)">酸</div><span class="tag-cas">104-15-4</span><div class="card-name">對甲苯磺酸</div><div class="card-en">PTSA (p-Toluenesulfonic Acid)</div><span class="tag-cat" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA">Acid</span></div><div class="card" data-c="105-59-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">105-59-9</span><div class="card-name">甲基二乙醇胺</div><div class="card-en">MDEA (N-Methyldiethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="10534-89-1"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10534-89-1</span><div class="card-name">六水合硝酸鈷</div><div class="card-en">Cobalt Nitrate Hexahydrate</div></div><div class="card" data-c="107-41-5"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">107-41-5</span><div class="card-name">己二醇</div><div class="card-en">Hexylene Glycol</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="107-98-2"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">107-98-2</span><div class="card-name">丙二醇甲醚</div><div class="card-en">PM (Propylene Glycol Methyl Ether)</div></div><div class="card" data-c="108-18-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">108-18-9</span><div class="card-name">二異丙胺</div><div class="card-en">DIPA (Diisopropylamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="108-65-6"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">108-65-6</span><div class="card-name">丙二醇甲醚醋酸酯</div><div class="card-en">PMA (Propylene Glycol Methyl Ether Acetate)</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="109-66-0"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">109-66-0</span><div class="card-name">正戊烷</div><div class="card-en">Pentane</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="109-73-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">109-73-9</span><div class="card-name">正丁胺</div><div class="card-en">n-Butylamine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="109-89-7"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">109-89-7</span><div class="card-name">二乙胺</div><div class="card-en">DEA (Diethylamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="110-54-3"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">110-54-3</span><div class="card-name">正己烷</div><div class="card-en">n-Hexane</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="110-91-8"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">110-91-8</span><div class="card-name">嗎啉</div><div class="card-en">Morpholine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="111-40-0"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">111-40-0</span><div class="card-name">二乙烯三胺</div><div class="card-en">DETA (Diethylenetriamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="111-42-2"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">111-42-2</span><div class="card-name">二乙醇胺</div><div class="card-en">DEA (Diethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div></div>
+  
 
-  <div class="pager" id="pg" style="display: flex;">
-    <button id="pp" disabled="">← 上一頁</button>
-    <span id="pi">1 / 8</span>
-    <button id="pn">下一頁 →</button>
-  </div>
+  
 
   <div class="footer">震豐股份有限公司 • 化學品資料庫離線版 v4.0 • 更新日期 2026-04-17</div>
-</div>
+<div class="stats">
+    <div class="stat-card"><div class="stat-num" id="st0">211</div><div class="stat-label">總品項數</div></div>
+    <div class="stat-card"><div class="stat-num" id="st1">29</div><div class="stat-label">產品分類</div></div>
+    <div class="stat-card"><div class="stat-num" id="st2" style="color: rgb(220, 38, 38);">30</div><div class="stat-label">毒化物管制品項</div></div>
+    <div class="stat-card"><div class="stat-num" id="st3" style="color: rgb(124, 58, 237);">0</div><div class="stat-label">既有化學物質</div></div>
+  </div><div id="sticky-procure-bar">
+    <span class="spb-brand">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.6"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>
+      採購作業
+    </span>
+    <div class="spb-divider"></div>
+    <div class="spb-counter">
+      已選 <span class="cnt-num" id="cmp-cnt">0</span> / 5
+    </div>
+    <button class="spb-btn spb-btn-compare" id="btn-compare" disabled="" onclick="openCompareModal()">
+      ⚖️ 開始比較
+    </button>
+    <div class="spb-divider"></div>
+    <button class="spb-btn spb-btn-inquiry" onclick="inquiryAll()">
+      📩 批量詢價
+    </button>
+    <button class="spb-btn spb-btn-csv" onclick="exportCSV()">
+      ↓ 匯出 CSV
+    </button>
+    <div class="spb-divider"></div>
+    <button class="spb-btn spb-btn-clear" onclick="clearCompare()">
+      ✕ 清除選取
+    </button>
+    <div class="spb-summary">
+      共 <strong id="spb-rc">211</strong> 項產品
+    </div>
+  </div><div class="search-wrap">
+    <div class="search-box">
+      <svg class="s-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input type="text" id="si" placeholder="搜尋 CAS No.、中文品名、英文名稱、供應商...">
+      <button class="x-btn" id="xb" style="display: none !important;">×</button>
+    </div>
+  </div><div id="filter-panel-v5" class="filter-panel-v5" style="display: block;">
+    <div class="fp-header">
+      <div class="fp-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        篩選條件
+      </div>
+      <span class="fp-clear" id="bc-v5" onclick="clearAllFilters()" style="display:none;">✕ 清除全部篩選</span>
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <div class="filter-group-label">🏷 產品分類</div>
+        <select class="filter-select-v5" id="fC-v5" onchange="applyFilter('cat',this.value)">
+          <option value="">— 全部分類 —</option><option value="Acid">Acid</option><option value="Alcohol">Alcohol</option><option value="Amine">Amine</option><option value="Base/Alkali">Base/Alkali</option><option value="Biocide">Biocide</option><option value="Food/Pharma">Food/Pharma</option><option value="Glycol/Polyol">Glycol/Polyol</option><option value="Inorganic Salt">Inorganic Salt</option><option value="Oil/Lubricant">Oil/Lubricant</option><option value="Solvent">Solvent</option><option value="Specialty Chemical">Specialty Chemical</option><option value="Surfactant">Surfactant</option><option value="Water Treatment">Water Treatment</option><option value="兩性界面活性">兩性界面活性</option><option value="十六烷值改進劑">十六烷值改進劑</option><option value="多醣增稠">多醣增稠</option><option value="季銨鹽殺菌">季銨鹽殺菌</option><option value="氧化漂白">氧化漂白</option><option value="無機填料">無機填料</option><option value="異噻唑啉酮殺菌">異噻唑啉酮殺菌</option><option value="硝基烷烴">硝基烷烴</option><option value="綠色酸">綠色酸</option><option value="綠色阻垢">綠色阻垢</option><option value="聚羧酸分散">聚羧酸分散</option><option value="胺類防鏽劑">胺類防鏽劑</option><option value="膦酸系阻垢">膦酸系阻垢</option><option value="螯合">螯合</option><option value="銅緩蝕劑">銅緩蝕劑</option><option value="非離子界面">非離子界面</option><option value="Acid">Acid</option><option value="Alcohol">Alcohol</option><option value="Amine">Amine</option><option value="Base/Alkali">Base/Alkali</option><option value="Biocide">Biocide</option><option value="Food/Pharma">Food/Pharma</option><option value="Glycol/Polyol">Glycol/Polyol</option><option value="Inorganic Salt">Inorganic Salt</option><option value="Oil/Lubricant">Oil/Lubricant</option><option value="Solvent">Solvent</option><option value="Specialty Chemical">Specialty Chemical</option><option value="Surfactant">Surfactant</option><option value="Water Treatment">Water Treatment</option><option value="兩性界面活性">兩性界面活性</option><option value="十六烷值改進劑">十六烷值改進劑</option><option value="多醣增稠">多醣增稠</option><option value="季銨鹽殺菌">季銨鹽殺菌</option><option value="氧化漂白">氧化漂白</option><option value="無機填料">無機填料</option><option value="異噻唑啉酮殺菌">異噻唑啉酮殺菌</option><option value="硝基烷烴">硝基烷烴</option><option value="綠色酸">綠色酸</option><option value="綠色阻垢">綠色阻垢</option><option value="聚羧酸分散">聚羧酸分散</option><option value="胺類防鏽劑">胺類防鏽劑</option><option value="膦酸系阻垢">膦酸系阻垢</option><option value="螯合">螯合</option><option value="銅緩蝕劑">銅緩蝕劑</option><option value="非離子界面">非離子界面</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-label">🏭 目標產業</div>
+        <select class="filter-select-v5" id="fI-v5" onchange="applyFilter('ind',this.value)">
+          <option value="">— 全部產業 —</option><option value="CIP清洗">CIP清洗</option><option value="CO2捕集">CO2捕集</option><option value="MWF">MWF</option><option value="PCB">PCB</option><option value="pH">pH</option><option value="保健">保健</option><option value="個護">個護</option><option value="全產業(CIP">全產業(CIP</option><option value="冷卻塔">冷卻塔</option><option value="半導體">半導體</option><option value="印刷">印刷</option><option value="塗料">塗料</option><option value="天然氣">天然氣</option><option value="天然氣脫硫">天然氣脫硫</option><option value="日化">日化</option><option value="橡膠">橡膠</option><option value="水處理">水處理</option><option value="消毒">消毒</option><option value="清洗">清洗</option><option value="潤滑油">潤滑油</option><option value="玻璃">玻璃</option><option value="生技">生技</option><option value="聚合物">聚合物</option><option value="藥品">藥品</option><option value="製藥">製藥</option><option value="農藥">農藥</option><option value="金屬加工">金屬加工</option><option value="金屬加工液">金屬加工液</option><option value="電子">電子</option><option value="電子)">電子)</option><option value="電鍍">電鍍</option><option value="食品">食品</option><option value="食品營養">食品營養</option><option value="飼料">飼料</option><option value="CIP清洗">CIP清洗</option><option value="CO2捕集">CO2捕集</option><option value="MWF">MWF</option><option value="PCB">PCB</option><option value="pH">pH</option><option value="保健">保健</option><option value="個護">個護</option><option value="全產業(CIP">全產業(CIP</option><option value="冷卻塔">冷卻塔</option><option value="半導體">半導體</option><option value="印刷">印刷</option><option value="塗料">塗料</option><option value="天然氣">天然氣</option><option value="天然氣脫硫">天然氣脫硫</option><option value="日化">日化</option><option value="橡膠">橡膠</option><option value="水處理">水處理</option><option value="消毒">消毒</option><option value="清洗">清洗</option><option value="潤滑油">潤滑油</option><option value="玻璃">玻璃</option><option value="生技">生技</option><option value="聚合物">聚合物</option><option value="藥品">藥品</option><option value="製藥">製藥</option><option value="農藥">農藥</option><option value="金屬加工">金屬加工</option><option value="金屬加工液">金屬加工液</option><option value="電子">電子</option><option value="電子)">電子)</option><option value="電鍍">電鍍</option><option value="食品">食品</option><option value="食品營養">食品營養</option><option value="飼料">飼料</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-label">📄 技術文件</div>
+        <select class="filter-select-v5" id="fDoc-v5" onchange="applyFilter('doc',this.value)">
+          <option value="">— 全部文件 —</option>
+          <option value="CoA">CoA 分析報告</option>
+          <option value="SDS">SDS 安全資料表</option>
+          <option value="TDS">TDS 技術規格</option>
+          <option value="PDS">PDS 產品規格</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-group" style="margin-bottom:0;">
+      <div class="filter-group-label" style="margin-bottom:6px;">⚖️ 法規管制</div>
+      <div class="reg-pills">
+        <span class="reg-pill rp-all active" onclick="filterByReg2('')">全部</span>
+        <span class="reg-pill rp-tox1" onclick="filterByReg2('第一類')">☣ 第一類毒化物</span>
+        <span class="reg-pill rp-tox2" onclick="filterByReg2('第二類')">⚗ 第二類毒化物</span>
+        <span class="reg-pill rp-tox3" onclick="filterByReg2('第三類')">⚠ 第三類毒化物</span>
+        <span class="reg-pill rp-tox4" onclick="filterByReg2('第四類')">🔬 第四類毒化物</span>
+        <span class="reg-pill rp-existing" onclick="filterByReg2('既有物質')">📋 既有化學物質</span>
+      </div>
+    </div>
+  </div><div id="results-toolbar-v5" class="results-toolbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="bf-v5" class="btn" onclick="toggleFilters()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1.5px solid rgb(59, 130, 246); background: rgb(239, 246, 255); color: rgb(29, 78, 216); transition: 0.15s; box-shadow: rgba(0, 0, 0, 0.06) 0px 1px 3px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg> 收合篩選</button>
+        <span id="bc-v5-label" style="display:none;font-size:12px;color:#EF4444;font-weight:700;cursor:pointer;" onclick="clearAllFilters()">✕ 清除篩選</span>
+      </div>
+      <div class="results-count-badge">
+        <span class="rc-num" id="rc-v5">211</span>
+        <span class="rc-label">項結果</span>
+      </div>
+    </div><div id="res"><div class="card" data-c="000095-14-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">000095-14-7</span><div class="card-name">電子級化學品</div><div class="card-en">Electronic Grade Chemical</div></div><div class="card" data-c="100-51-6"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">100-51-6</span><div class="card-name">苯甲醇</div><div class="card-en">Benzyl Alcohol</div></div><div class="card" data-c="100-52-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">100-52-7</span><div class="card-name">苯甲醛</div><div class="card-en">Benzaldehyde</div></div><div class="card" data-c="100-79-8"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">100-79-8</span><div class="card-name">甘油縮甲醛</div><div class="card-en">Glycasol (Glycerol Formal)</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="10028-15-6"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10028-15-6</span><div class="card-name">臭氧</div><div class="card-en">Ozone (O3)</div></div><div class="card" data-c="10028-22-5"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10028-22-5</span><div class="card-name">硫酸鐵</div><div class="card-en">Ferric Sulfate (Fe2(SO4)3)</div></div><div class="card" data-c="10043-35-3"><div class="card-icon" style="background:linear-gradient(135deg,#DC2626,#991B1B)">酸</div><span class="tag-cas">10043-35-3</span><div class="card-name">硼酸</div><div class="card-en">Boric Acid (H3BO3)</div><span class="tag-cat" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA">Acid</span></div><div class="card" data-c="10043-52-4"><div class="card-icon" style="background:linear-gradient(135deg,#0D9488,#115E59)">鹽</div><span class="tag-cas">10043-52-4</span><div class="card-name">氯化鈣</div><div class="card-en">Calcium Chloride (CaCl2)</div><span class="tag-cat" style="background:#F0FDFA;color:#115E59;border:1px solid #99F6E4">Inorganic Salt</span></div><div class="card" data-c="10049-04-4"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10049-04-4</span><div class="card-name">二氧化氯</div><div class="card-en">Chlorine Dioxide (ClO2)</div></div><div class="card" data-c="101-83-7"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">胺</div><span class="tag-cas">101-83-7</span><div class="card-name">二環己胺</div><div class="card-en">DCHA (Dicyclohexylamine)</div><span class="tag-cat" style="background:#F3F4F6;color:#374151;border:1px solid #D1D5DB">胺類防鏽劑</span></div><div class="card" data-c="10124-56-8"><div class="card-icon" style="background:linear-gradient(135deg,#059669,#065F46)">水</div><span class="tag-cas">10124-56-8</span><div class="card-name">六偏磷酸鈉</div><div class="card-en">SHMP (Sodium Hexametaphosphate)</div><span class="tag-cat" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0">Water Treatment</span></div><div class="card" data-c="102-71-6"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">102-71-6</span><div class="card-name">三乙醇胺</div><div class="card-en">TEA (Triethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="10217-52-4"><div class="card-icon" style="background:linear-gradient(135deg,#059669,#065F46)">水</div><span class="tag-cas">10217-52-4</span><div class="card-name">聯氨衍生物緩蝕劑</div><div class="card-en">CORRGUARD 90 (Hydrazine Derivative)</div><span class="tag-cat" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0">Water Treatment</span></div><div class="card" data-c="10222-01-2"><div class="card-icon" style="background:linear-gradient(135deg,#EA580C,#9A3412)">殺</div><span class="tag-cas">10222-01-2</span><div class="card-name">二溴硝基丙醯胺</div><div class="card-en">DBNPA (2,2-Dibromo-3-Nitrilopropionamide)</div><span class="tag-cat" style="background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA">Biocide</span></div><div class="card" data-c="103-49-1"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">103-49-1</span><div class="card-name">二苄胺</div><div class="card-en">Dibenzylamine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="103-90-2"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">103-90-2</span><div class="card-name">乙醯胺酚</div><div class="card-en">Acetaminophen (Paracetamol)</div></div><div class="card" data-c="104-15-4"><div class="card-icon" style="background:linear-gradient(135deg,#DC2626,#991B1B)">酸</div><span class="tag-cas">104-15-4</span><div class="card-name">對甲苯磺酸</div><div class="card-en">PTSA (p-Toluenesulfonic Acid)</div><span class="tag-cat" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA">Acid</span></div><div class="card" data-c="105-59-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">105-59-9</span><div class="card-name">甲基二乙醇胺</div><div class="card-en">MDEA (N-Methyldiethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="10534-89-1"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">10534-89-1</span><div class="card-name">六水合硝酸鈷</div><div class="card-en">Cobalt Nitrate Hexahydrate</div></div><div class="card" data-c="107-41-5"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">107-41-5</span><div class="card-name">己二醇</div><div class="card-en">Hexylene Glycol</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="107-98-2"><div class="card-icon" style="background:linear-gradient(135deg,#6B7280,#374151)">⚛</div><span class="tag-cas">107-98-2</span><div class="card-name">丙二醇甲醚</div><div class="card-en">PM (Propylene Glycol Methyl Ether)</div></div><div class="card" data-c="108-18-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">108-18-9</span><div class="card-name">二異丙胺</div><div class="card-en">DIPA (Diisopropylamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="108-65-6"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">108-65-6</span><div class="card-name">丙二醇甲醚醋酸酯</div><div class="card-en">PMA (Propylene Glycol Methyl Ether Acetate)</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="109-66-0"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">109-66-0</span><div class="card-name">正戊烷</div><div class="card-en">Pentane</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="109-73-9"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">109-73-9</span><div class="card-name">正丁胺</div><div class="card-en">n-Butylamine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="109-89-7"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">109-89-7</span><div class="card-name">二乙胺</div><div class="card-en">DEA (Diethylamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="110-54-3"><div class="card-icon" style="background:linear-gradient(135deg,#4F46E5,#3730A3)">溶</div><span class="tag-cas">110-54-3</span><div class="card-name">正己烷</div><div class="card-en">n-Hexane</div><span class="tag-cat" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE">Solvent</span></div><div class="card" data-c="110-91-8"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">110-91-8</span><div class="card-name">嗎啉</div><div class="card-en">Morpholine</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="111-40-0"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">111-40-0</span><div class="card-name">二乙烯三胺</div><div class="card-en">DETA (Diethylenetriamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div><div class="card" data-c="111-42-2"><div class="card-icon" style="background:linear-gradient(135deg,#2563EB,#1E40AF)">胺</div><span class="tag-cas">111-42-2</span><div class="card-name">二乙醇胺</div><div class="card-en">DEA (Diethanolamine)</div><span class="tag-cat" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE">Amine</span></div></div><div class="pager" id="pg" style="display: flex;">
+    <button id="pp" disabled="" style="display: none !important;">← 上一頁</button>
+    <span id="pi">1 / 8</span>
+    <button id="pn" style="display: none !important;">下一頁 →</button>
+  </div></div>
 
 <script>
 var D=[{"c": "000095-14-7", "z": "電子級化學品", "e": "Electronic Grade Chemical", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "100-51-6", "z": "苯甲醇", "e": "Benzyl Alcohol", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "100-52-7", "z": "苯甲醛", "e": "Benzaldehyde", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "100-79-8", "z": "甘油縮甲醛", "e": "Glycasol (Glycerol Formal)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "10028-15-6", "z": "臭氧", "e": "Ozone (O3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "10028-22-5", "z": "硫酸鐵", "e": "Ferric Sulfate (Fe2(SO4)3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "10043-35-3", "z": "硼酸", "e": "Boric Acid (H3BO3)", "cat": "Acid", "f": "Powder/Granule", "ph": "3.8-4.8 (3.3%)", "d": "1.435", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS, TDS", "sup": "", "pr": "55–80"}, {"c": "10043-52-4", "z": "氯化鈣", "e": "Calcium Chloride (CaCl2)", "cat": "Inorganic Salt", "f": "Flake/Liquid", "ph": "8.0-9.0 (10%)", "d": "2.15", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "10049-04-4", "z": "二氧化氯", "e": "Chlorine Dioxide (ClO2)", "cat": "", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "101-83-7", "z": "二環己胺", "e": "DCHA (Dicyclohexylamine)", "cat": "胺類防鏽劑", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "180–240"}, {"c": "10124-56-8", "z": "六偏磷酸鈉", "e": "SHMP (Sodium Hexametaphosphate)", "cat": "Water Treatment", "f": "Powder/Flake", "ph": "6.0-7.5 (1%)", "d": "2.484", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA", "sup": "", "pr": ""}, {"c": "102-71-6", "z": "三乙醇胺", "e": "TEA (Triethanolamine)", "cat": "Amine", "f": "Liquid 85-99%", "ph": "10.5", "d": "1.124", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "65–95"}, {"c": "10217-52-4", "z": "聯氨衍生物緩蝕劑", "e": "CORRGUARD 90 (Hydrazine Derivative)", "cat": "Water Treatment", "f": "", "ph": "", "d": "", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "", "sup": "", "pr": ""}, {"c": "10222-01-2", "z": "二溴硝基丙醯胺", "e": "DBNPA (2,2-Dibromo-3-Nitrilopropionamide)", "cat": "Biocide", "f": "Powder/Liquid 20%", "ph": "3.0-5.0", "d": "1.1-1.2", "ti": "水處理/塗料/MWF/日化", "app": "殺菌、防腐、防霉", "doc": "CoA, SDS, TDS", "sup": "", "pr": "380–540"}, {"c": "103-49-1", "z": "二苄胺", "e": "Dibenzylamine", "cat": "Amine", "f": "", "ph": "", "d": "", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "PDS", "sup": "", "pr": ""}, {"c": "103-90-2", "z": "乙醯胺酚", "e": "Acetaminophen (Paracetamol)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "104-15-4", "z": "對甲苯磺酸", "e": "PTSA (p-Toluenesulfonic Acid)", "cat": "Acid", "f": "", "ph": "", "d": "", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "SDS", "sup": "", "pr": ""}, {"c": "105-59-9", "z": "甲基二乙醇胺", "e": "MDEA (N-Methyldiethanolamine)", "cat": "Amine", "f": "Liquid 99%", "ph": "10.5", "d": "1.038", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "10534-89-1", "z": "六水合硝酸鈷", "e": "Cobalt Nitrate Hexahydrate", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "107-41-5", "z": "己二醇", "e": "Hexylene Glycol", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "SDS", "sup": "", "pr": ""}, {"c": "107-98-2", "z": "丙二醇甲醚", "e": "PM (Propylene Glycol Methyl Ether)", "cat": "", "f": "", "ph": "", "d": "", "ti": "塗料", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "108-18-9", "z": "二異丙胺", "e": "DIPA (Diisopropylamine)", "cat": "Amine", "f": "Liquid", "ph": "12.0", "d": "0.722", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "108-65-6", "z": "丙二醇甲醚醋酸酯", "e": "PMA (Propylene Glycol Methyl Ether Acetate)", "cat": "Solvent", "f": "Liquid", "ph": "N/A", "d": "0.965", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "109-66-0", "z": "正戊烷", "e": "Pentane", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "", "sup": "", "pr": ""}, {"c": "109-73-9", "z": "正丁胺", "e": "n-Butylamine", "cat": "Amine", "f": "", "ph": "", "d": "", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "109-89-7", "z": "二乙胺", "e": "DEA (Diethylamine)", "cat": "Amine", "f": "Liquid", "ph": "12.0", "d": "0.707", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "110-54-3", "z": "正己烷", "e": "n-Hexane", "cat": "Solvent", "f": "Liquid", "ph": "N/A", "d": "0.659", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "110-91-8", "z": "嗎啉", "e": "Morpholine", "cat": "Amine", "f": "Liquid 99%", "ph": "9.5-10.5", "d": "1.007", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, PDS, SDS", "sup": "", "pr": ""}, {"c": "111-40-0", "z": "二乙烯三胺", "e": "DETA (Diethylenetriamine)", "cat": "Amine", "f": "Liquid", "ph": "13.0", "d": "0.955", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "111-42-2", "z": "二乙醇胺", "e": "DEA (Diethanolamine)", "cat": "Amine", "f": "Liquid/Solid", "ph": "11.0", "d": "1.097", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, PDS, SDS, TDS", "sup": "", "pr": "80–110"}, {"c": "11138-66-2", "z": "三仙膠", "e": "Xanthan Gum", "cat": "多醣增稠", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": "180–260"}, {"c": "1115-70-4", "z": "二甲雙胍", "e": "Metformin HCl", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "112-24-3", "z": "三乙烯四胺", "e": "TETA (Triethylenetetramine)", "cat": "Amine", "f": "Liquid", "ph": "13.0", "d": "0.982", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA", "sup": "", "pr": ""}, {"c": "112-27-6", "z": "三乙二醇", "e": "TEG (Triethylene Glycol)", "cat": "Glycol/Polyol", "f": "Liquid", "ph": "Neutral", "d": "1.125", "ti": "個護/食品/製藥/天然氣", "app": "保濕、溶劑、甜味劑、脫水", "doc": "SDS", "sup": "", "pr": ""}, {"c": "112-34-5", "z": "二乙二醇丁醚", "e": "DB (Diethylene Glycol Monobutyl Ether)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "112945-52-5", "z": "二氧化矽", "e": "Silica (Fumed/Precipitated)", "cat": "無機填料", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "120–220"}, {"c": "12125-01-8", "z": "氟化銨", "e": "Ammonium Fluoride (NH4F)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "122-20-3", "z": "三異丙醇胺", "e": "TIPA (Triisopropanolamine)", "cat": "Amine", "f": "Liquid 85%", "ph": "11.0", "d": "0.996", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "123-31-9", "z": "對苯二酚", "e": "Hydroquinone (HQ)", "cat": "Specialty Chemical", "f": "", "ph": "", "d": "", "ti": "電子/聚合物/半導體", "app": "特化製程、表面處理", "doc": "CoA, PDS", "sup": "", "pr": ""}, {"c": "123-94-4", "z": "單硬脂酸甘油酯", "e": "GMS (Glyceryl Monostearate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "124-09-4", "z": "己二胺", "e": "Hexamethylenediamine (HMDA)", "cat": "Amine", "f": "", "ph": "", "d": "", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "124-68-5", "z": "氨甲基丙醇", "e": "AMP-95 (2-Amino-2-methyl-1-propanol)", "cat": "Amine", "f": "Liquid 95%", "ph": "11.3", "d": "0.942", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "12645-31-7", "z": "磷酸鋁", "e": "Aluminium Phosphate", "cat": "Acid", "f": "", "ph": "", "d": "", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "PDS, SDS", "sup": "", "pr": ""}, {"c": "127-19-5", "z": "二甲基乙醯胺", "e": "DMAc (Dimethylacetamide)", "cat": "Solvent", "f": "Liquid 99%", "ph": "Neutral", "d": "0.937", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "127-40-2", "z": "葉黃素", "e": "Lutein", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "1303-96-4", "z": "硼砂", "e": "Borax (Sodium Tetraborate)", "cat": "Inorganic Salt", "f": "Powder/Crystal", "ph": "9.2 (1%)", "d": "1.73", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "CoA, PDS", "sup": "", "pr": ""}, {"c": "1305-62-0", "z": "氫氧化鈣", "e": "Calcium Hydroxide (Ca(OH)2)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "1310-58-3", "z": "氫氧化鉀", "e": "Potassium Hydroxide (KOH)", "cat": "Base/Alkali", "f": "Flake/Liquid 45-90%", "ph": "14", "d": "1.45-2.04", "ti": "全產業(CIP/pH/電子)", "app": "中和、清洗、蝕刻", "doc": "CoA, TDS", "sup": "", "pr": ""}, {"c": "1310-73-2", "z": "氫氧化鈉", "e": "Sodium Hydroxide (NaOH)", "cat": "Base/Alkali", "f": "Flake/Liquid 25-50%", "ph": "14", "d": "1.25-1.53", "ti": "全產業(CIP/pH/電子)", "app": "中和、清洗、蝕刻", "doc": "SDS", "sup": "", "pr": ""}, {"c": "1313-82-2", "z": "硫化鈉", "e": "Sodium Sulfide (Na2S)", "cat": "Inorganic Salt", "f": "Flake/Liquid", "ph": "12.0", "d": "1.86", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "1327-41-9", "z": "聚合氯化鋁", "e": "PAC (Poly Aluminium Chloride)", "cat": "", "f": "Powder/Liquid", "ph": "3.5-5.0", "d": "1.15-1.35", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "1330-20-7", "z": "二甲苯", "e": "Xylene (Mixed)", "cat": "Solvent", "f": "Liquid", "ph": "N/A", "d": "0.864", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "SDS", "sup": "", "pr": ""}, {"c": "1332-58-7", "z": "高嶺土", "e": "Kaolin (China Clay)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "", "sup": "", "pr": ""}, {"c": "1336-21-6", "z": "氨水", "e": "Ammonium Hydroxide (NH4OH)", "cat": "Base/Alkali", "f": "Liquid 25-28%", "ph": "11.6", "d": "0.90", "ti": "全產業(CIP/pH/電子)", "app": "中和、清洗、蝕刻", "doc": "SDS", "sup": "", "pr": ""}, {"c": "1344-28-1", "z": "氧化鋁", "e": "Aluminium Oxide (Al2O3)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "", "sup": "", "pr": ""}, {"c": "13463-67-7", "z": "二氧化鈦", "e": "Titanium Dioxide (TiO2)", "cat": "Inorganic Salt", "f": "Powder", "ph": "6.5-8.5", "d": "3.9-4.2", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "", "sup": "", "pr": ""}, {"c": "137-66-6", "z": "抗壞血酸棕櫚酸酯", "e": "Ascorbyl Palmitate", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "139-13-9", "z": "氮基三乙酸", "e": "NTA (Nitrilotriacetic Acid)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "141-43-5", "z": "單乙醇胺", "e": "MEA (Monoethanolamine)", "cat": "Amine", "f": "Liquid 99%", "ph": "12.0", "d": "1.012", "ti": "塗料/MWF/天然氣脫硫/CO2捕集", "app": "pH調整、中和劑、防鏽、乳化", "doc": "", "sup": "", "pr": "55–75"}, {"c": "141-53-7", "z": "甲酸鈉", "e": "Sodium Formate", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "141-78-6", "z": "乙酸乙酯", "e": "Ethyl Acetate (EAC)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "", "sup": "", "pr": ""}, {"c": "144-55-8", "z": "碳酸氫鈉", "e": "Sodium Bicarbonate (NaHCO3)", "cat": "Base/Alkali", "f": "Powder", "ph": "8.3 (1%)", "d": "2.20", "ti": "全產業(CIP/pH/電子)", "app": "中和、清洗、蝕刻", "doc": "TDS", "sup": "", "pr": ""}, {"c": "144-62-7", "z": "草酸", "e": "Oxalic Acid (C2H2O4)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "14667-55-1", "z": "二甲基異山梨醇", "e": "DMI (Dimethyl Isosorbide)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "149-32-6", "z": "赤藻糖醇", "e": "Erythritol", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "15630-89-4", "z": "過碳酸鈉", "e": "Sodium Percarbonate", "cat": "氧化漂白", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "45–75"}, {"c": "15827-60-8", "z": "二乙烯三胺五亞甲基膦酸", "e": "DTPMPA (Diethylenetriaminepenta Methylenephosphonic Acid)", "cat": "Water Treatment", "f": "Liquid 50%", "ph": "2.0", "d": "1.35", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "16079-88-2", "z": "溴氯海因", "e": "BCDMH (Bromochlorodimethylhydantoin)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "160875-66-1", "z": "聚羧酸鹽共聚物", "e": "Polycarboxylate Copolymer", "cat": "Surfactant", "f": "", "ph": "", "d": "", "ti": "清洗/農藥/MWF/塗料", "app": "乳化、分散、潤濕、消泡", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "17766-26-6", "z": "重金屬捕捉劑", "e": "TMT-15 (Trimercaptotriazine)", "cat": "Water Treatment", "f": "Liquid 15%", "ph": "10-12", "d": "1.10-1.15", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA, PDS, SDS", "sup": "", "pr": ""}, {"c": "181828-06-8", "z": "聚天冬胺酸", "e": "PASP (Polyaspartic Acid)", "cat": "綠色阻垢", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": "180–260"}, {"c": "24634-61-5", "z": "山梨酸鉀", "e": "Potassium Sorbate", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "25155-30-0", "z": "十二烷基苯磺酸鈉", "e": "SDBS (Sodium Dodecylbenzenesulfonate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "25249-54-1", "z": "聚維酮", "e": "Povidone (PVP-K30)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "25322-68-3", "z": "聚乙二醇", "e": "PEG (Polyethylene Glycol)", "cat": "Glycol/Polyol", "f": "Liquid/Wax", "ph": "4.5-7.5", "d": "1.1-1.2", "ti": "個護/食品/製藥/天然氣", "app": "保濕、溶劑、甜味劑、脫水", "doc": "CoA", "sup": "", "pr": ""}, {"c": "25655-41-8", "z": "聚維酮碘", "e": "Povidone-Iodine (PVP-I)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "26099-09-2", "z": "聚醚消泡劑", "e": "Polyether Defoamer", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "26172-55-4", "z": "異噻唑啉酮", "e": "CMIT/MIT (Kathon CG)", "cat": "異噻唑啉酮殺菌", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "520–680"}, {"c": "2634-33-5", "z": "苯並異噻唑啉酮", "e": "BIT (1,2-Benzisothiazolin-3-one)", "cat": "Biocide", "f": "Liquid 20%", "ph": "9.0-11.0", "d": "1.05-1.10", "ti": "水處理/塗料/MWF/日化", "app": "殺菌、防腐、防霉", "doc": "CoA, SDS", "sup": "", "pr": "450–620"}, {"c": "26787-78-0", "z": "阿莫西林", "e": "Amoxicillin", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "2687-91-4", "z": "N-乙基吡咯烷酮", "e": "NEP (N-Ethyl-2-Pyrrolidone)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "27247-96-7", "z": "2-乙基己基硝酸酯", "e": "2-EHN (2-Ethylhexyl Nitrate)", "cat": "十六烷值改進劑", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "110–140"}, {"c": "2809-21-4", "z": "羥基乙叉二膦酸", "e": "HEDP (1-Hydroxyethylidene-1,1-Diphosphonic Acid)", "cat": "膦酸系阻垢", "f": "Liquid 60%", "ph": "1.5-2.0", "d": "1.43-1.47", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": "90–130"}, {"c": "2867-47-2", "z": "甲基丙烯酸二甲氨基乙酯", "e": "DMAEMA (Dimethylaminoethyl Methacrylate)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "29385-43-1", "z": "甲基苯並三唑", "e": "TTA (Tolyltriazole)", "cat": "Water Treatment", "f": "Powder/Liquid", "ph": "6.0-7.0 (1%)", "d": "1.24", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "SDS, TDS", "sup": "", "pr": "200–290"}, {"c": "302-01-2", "z": "聯氨", "e": "Hydrazine (N2H4)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "304-59-6", "z": "酒石酸鉀鈉", "e": "Potassium Sodium Tartrate (Rochelle Salt)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "CoA, PDS", "sup": "", "pr": ""}, {"c": "3710-84-7", "z": "二乙基羥胺", "e": "DEHA (Diethylhydroxylamine)", "cat": "", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "37971-36-1", "z": "膦丁烷三羧酸", "e": "PBTC (2-Phosphonobutane-1,2,4-Tricarboxylic Acid)", "cat": "Water Treatment", "f": "Liquid 50%", "ph": "2.0-2.5", "d": "1.32", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "40623-75-4", "z": "磷酸酯聚合物", "e": "Phosphonate Polymer", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "4435-53-4", "z": "甲基丁醇胺", "e": "MBA (Methylbutylamine)", "cat": "Amine", "f": "", "ph": "", "d": "", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "458-37-7", "z": "薑黃素", "e": "Curcumin", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "471-34-1", "z": "碳酸鈣", "e": "Calcium Carbonate (CaCO3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "4719-04-4", "z": "六氫三嗪", "e": "HHT (Hexahydro-1,3,5-tris(2-hydroxyethyl)-s-triazine)", "cat": "", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "4767-03-7", "z": "二羥甲基丙酸", "e": "DMPA (Dimethylolpropionic Acid)", "cat": "Specialty Chemical", "f": "", "ph": "", "d": "", "ti": "電子/聚合物/半導體", "app": "特化製程、表面處理", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "497-19-8", "z": "碳酸鈉", "e": "Sodium Carbonate (Na2CO3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "50-21-5", "z": "乳酸", "e": "Lactic Acid (E270)", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "50-70-4", "z": "山梨醇", "e": "Sorbitol", "cat": "Food/Pharma", "f": "Powder/Liquid 70%", "ph": "5.0-7.0", "d": "1.49", "ti": "食品/保健/飼料/藥品", "app": "營養添加、防腐、甜味", "doc": "CoA, SDS", "sup": "", "pr": "55–80"}, {"c": "50-81-7", "z": "維生素C", "e": "L-Ascorbic Acid (Vitamin C)", "cat": "Food/Pharma", "f": "Powder", "ph": "2.1-2.6 (5%)", "d": "1.65", "ti": "食品/保健/飼料/藥品", "app": "營養添加、防腐、甜味", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "51981-21-6", "z": "穀氨酸二乙酸四鈉", "e": "GLDA (Tetrasodium Glutamate Diacetate)", "cat": "Water Treatment", "f": "", "ph": "", "d": "", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA, SDS, TDS", "sup": "", "pr": "220–320"}, {"c": "527-07-1", "z": "葡萄糖酸鈉", "e": "Sodium Gluconate", "cat": "螯合", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "55–85"}, {"c": "532-32-1", "z": "苯甲酸鈉", "e": "Sodium Benzoate", "cat": "Inorganic Salt", "f": "Powder/Granule", "ph": "8.0 (1%)", "d": "1.497", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "5329-14-6", "z": "氨基磺酸", "e": "Sulfamic Acid", "cat": "Acid", "f": "Crystal/Powder", "ph": "1.0 (1%)", "d": "2.126", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, PDS, SDS", "sup": "", "pr": ""}, {"c": "5332-73-0", "z": "3-甲氧基丙胺", "e": "MOPA (3-Methoxypropylamine)", "cat": "Amine", "f": "", "ph": "", "d": "", "ti": "塗料/MWF/天然氣脫硫", "app": "pH調整、中和、防鏽、乳化", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "557-04-0", "z": "硬脂酸鎂", "e": "Magnesium Stearate", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "56-81-5", "z": "甘油", "e": "Glycerine (Glycerol)", "cat": "Glycol/Polyol", "f": "Liquid 99.5%", "ph": "7.0", "d": "1.261", "ti": "個護/食品/製藥/天然氣", "app": "保濕、溶劑、甜味劑、脫水", "doc": "", "sup": "", "pr": ""}, {"c": "56038-13-2", "z": "三氯蔗糖", "e": "Sucralose", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "57-55-6", "z": "丙二醇", "e": "Propylene Glycol (PG)", "cat": "Glycol/Polyol", "f": "Liquid 99%", "ph": "Neutral", "d": "1.036", "ti": "個護/食品/製藥/天然氣", "app": "保濕、溶劑、甜味劑、脫水", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "57817-89-7", "z": "乙醯磺胺酸鉀", "e": "Acesulfame Potassium (Ace-K)", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "59-02-9", "z": "維生素E", "e": "Vitamin E (d-Alpha-Tocopherol)", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "5989-27-5", "z": "右旋檸檬烯", "e": "D-Limonene", "cat": "Solvent", "f": "Liquid", "ph": "N/A", "d": "0.842", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "60-00-4", "z": "乙二胺四乙酸", "e": "EDTA (Ethylenediaminetetraacetic Acid)", "cat": "螯合", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "70–110"}, {"c": "6132-04-3", "z": "檸檬酸鈉", "e": "Sodium Citrate Dihydrate", "cat": "Food/Pharma", "f": "", "ph": "", "d": "", "ti": "食品/保健/飼料/藥品", "app": "營養添加、防腐、甜味", "doc": "SDS", "sup": "", "pr": ""}, {"c": "61789-40-0", "z": "椰油醯胺丙基甜菜鹼", "e": "CAPB (Cocamidopropyl Betaine)", "cat": "兩性界面活性", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "95–145"}, {"c": "61789-99-3", "z": "精製豬脂油", "e": "Refined Lard Oil", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "CoA, TDS", "sup": "", "pr": ""}, {"c": "63-42-3", "z": "乳糖", "e": "Lactose", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "63148-62-9", "z": "聚二甲基矽氧烷", "e": "PDMS (Polydimethylsiloxane)", "cat": "Specialty Chemical", "f": "", "ph": "", "d": "", "ti": "電子/聚合物/半導體", "app": "特化製程、表面處理", "doc": "PDS, SDS", "sup": "", "pr": "180–320"}, {"c": "64-02-8", "z": "乙二胺四乙酸四鈉", "e": "EDTA-4Na", "cat": "", "f": "Powder/Liquid", "ph": "11.0 (1%)", "d": "1.01", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "64-17-5", "z": "乙醇", "e": "Ethanol (Alcohol)", "cat": "Alcohol", "f": "", "ph": "", "d": "", "ti": "電子/製藥/消毒", "app": "溶劑、消毒、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "64-18-6", "z": "甲酸", "e": "Formic Acid (HCOOH)", "cat": "Acid", "f": "Liquid 85-90%", "ph": "2.0", "d": "1.22", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, PDS", "sup": "", "pr": ""}, {"c": "6419-19-8", "z": "胺基三亞甲基膦酸", "e": "ATMP (Amino Trimethylene Phosphonic Acid)", "cat": "Water Treatment", "f": "Liquid 50%", "ph": "2.0-2.5", "d": "1.28-1.32", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA, TDS", "sup": "", "pr": "85–125"}, {"c": "64742-04-7", "z": "芳烴抽出油", "e": "TDAE (Treated Distillate Aromatic Extract)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "", "sup": "", "pr": ""}, {"c": "64742-47-8", "z": "加氫處理輕石蠟油", "e": "HT (Hydrotreated Light Paraffinic Oil)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "CoA, PDS, SDS", "sup": "", "pr": ""}, {"c": "64742-48-9", "z": "異構烷烴溶劑", "e": "Isopar H (Isoparaffinic Solvent)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA", "sup": "", "pr": ""}, {"c": "64742-53-6", "z": "環烷基礦物油", "e": "Naphthenic Oil", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "PDS", "sup": "", "pr": ""}, {"c": "64742-61-6", "z": "合成石蠟溶劑", "e": "Sasol Wax / Saraline", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "PDS, SDS", "sup": "", "pr": ""}, {"c": "64742-94-5", "z": "重芳烴溶劑", "e": "Solvesso 150 (Heavy Aromatic Naphtha)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA", "sup": "", "pr": ""}, {"c": "64742-95-6", "z": "輕芳烴溶劑", "e": "Solvesso 100 (Light Aromatic Naphtha)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "", "sup": "", "pr": ""}, {"c": "65-85-0", "z": "苯甲酸", "e": "Benzoic Acid", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "67-63-0", "z": "異丙醇", "e": "IPA (Isopropyl Alcohol)", "cat": "Solvent", "f": "Liquid 99%+", "ph": "Neutral", "d": "0.786", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "67-68-5", "z": "二甲基亞碸", "e": "DMSO (Dimethyl Sulfoxide)", "cat": "Solvent", "f": "Liquid 99%", "ph": "Neutral", "d": "1.100", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, TDS", "sup": "", "pr": ""}, {"c": "68-26-8", "z": "維生素A", "e": "Retinol (Vitamin A)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68002-71-1", "z": "十二烷基硫酸鈉", "e": "SLS (Sodium Lauryl Sulfate)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "SDS", "sup": "", "pr": ""}, {"c": "68037-01-4", "z": "聚α烯烴", "e": "PAO (Poly Alpha Olefin)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "SDS, TDS", "sup": "", "pr": "160–260"}, {"c": "68131-77-1", "z": "改性醇胺", "e": "Kendex 0834 (Modified Alkanolamine)", "cat": "Specialty Chemical", "f": "", "ph": "", "d": "", "ti": "電子/聚合物/半導體", "app": "特化製程、表面處理", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "68187-30-4", "z": "椰油基葡糖苷", "e": "Coco-Glucoside", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68412-35-1", "z": "磷酸酯摩擦改進劑", "e": "Phosphate Ester Friction Modifier", "cat": "", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68424-85-1", "z": "苄基二甲基銨氯化物", "e": "BKC (Benzalkonium Chloride)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68439-46-3", "z": "脂肪醇聚氧乙烯醚", "e": "AEO (Fatty Alcohol Ethoxylate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68515-73-1", "z": "烷基多糖苷", "e": "APG (Alkyl Polyglucoside)", "cat": "非離子界面", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "180–260"}, {"c": "68585-34-2", "z": "月桂醇聚醚硫酸鈉", "e": "SLES (Sodium Laureth Sulfate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "68649-42-3", "z": "二烷基二硫代磷酸鋅", "e": "ZDDP (Zinc Dialkyldithiophosphate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "69-72-7", "z": "水楊酸", "e": "Salicylic Acid", "cat": "Acid", "f": "Powder", "ph": "2.4 (sat.)", "d": "1.443", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "70356-09-1", "z": "阿伏苯宗", "e": "Avobenzone", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "70592-80-2", "z": "聚環氧琥珀酸", "e": "PESA (Polyepoxysuccinic Acid)", "cat": "Water Treatment", "f": "", "ph": "", "d": "", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA", "sup": "", "pr": ""}, {"c": "70693-62-8", "z": "過碳醯胺", "e": "Hydrogen Peroxide-Urea Complex", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7173-51-5", "z": "雙十烷基二甲基氯化銨", "e": "DDAC (Didecyldimethylammonium Chloride)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7226-23-5", "z": "二甲基丙烯脲", "e": "DMPU (Dimethylpropyleneurea)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "72623-86-0", "z": "液壓油", "e": "Mobil DTE 10 Excel (Hydraulic Oil)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "SDS", "sup": "", "pr": ""}, {"c": "7365-45-9", "z": "HEPES緩衝液", "e": "HEPES Buffer", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7440-44-0", "z": "活性碳", "e": "Activated Carbon", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7446-70-0", "z": "無水氯化鋁", "e": "Aluminium Chloride Anhydrous (AlCl3)", "cat": "Inorganic Salt", "f": "Powder/Granule", "ph": "2.0-3.0", "d": "2.48", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "7447-39-4", "z": "氯化銅", "e": "Cupric Chloride (CuCl2)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "75-59-2", "z": "四甲基氫氧化銨", "e": "TMAH (Tetramethylammonium Hydroxide)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "75-75-2", "z": "甲磺酸", "e": "MSA (Methanesulfonic Acid)", "cat": "綠色酸", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "180–240"}, {"c": "7580-31-6", "z": "二乙基羥胺", "e": "DEHA (Diethylhydroxylamine)", "cat": "Water Treatment", "f": "Liquid 85%", "ph": "10.0", "d": "0.86", "ti": "水處理/半導體/PCB/冷卻塔", "app": "阻垢、緩蝕、殺菌、重金屬捕捉", "doc": "CoA", "sup": "", "pr": ""}, {"c": "7601-54-9", "z": "磷酸三鈉", "e": "TSP (Trisodium Phosphate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7631-90-5", "z": "亞硫酸氫鈉", "e": "Sodium Bisulfite (NaHSO3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7631-95-0", "z": "鉬酸鈉", "e": "Sodium Molybdate (Na2MoO4)", "cat": "", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7647-01-0", "z": "鹽酸", "e": "Hydrochloric Acid (HCl)", "cat": "Acid", "f": "Liquid 31-37%", "ph": "<1", "d": "1.16-1.19", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA", "sup": "", "pr": ""}, {"c": "7647-14-5", "z": "氯化鈉", "e": "Sodium Chloride (NaCl)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7664-38-2", "z": "磷酸", "e": "Phosphoric Acid (H3PO4)", "cat": "Acid", "f": "Liquid 75-85%", "ph": "1.0", "d": "1.58-1.69", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "7664-39-3", "z": "氫氟酸", "e": "Hydrofluoric Acid (HF)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7664-93-9", "z": "硫酸", "e": "Sulfuric Acid (H2SO4)", "cat": "Acid", "f": "Liquid 93-98%", "ph": "<1", "d": "1.84", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "7681-52-9", "z": "次氯酸鈉", "e": "Sodium Hypochlorite (NaClO)", "cat": "", "f": "Liquid 5-12%", "ph": "11-13", "d": "1.07-1.21", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7681-57-4", "z": "偏亞硫酸氫鈉", "e": "Sodium Metabisulfite (Na2S2O5)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7697-37-2", "z": "硝酸", "e": "Nitric Acid (HNO3)", "cat": "Acid", "f": "Liquid 60-68%", "ph": "<1", "d": "1.38-1.42", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "77-86-1", "z": "三羥甲基氨基甲烷", "e": "Tris (Tromethamine)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "77-92-9", "z": "檸檬酸", "e": "Citric Acid", "cat": "Acid", "f": "Crystal/Powder", "ph": "1.5-2.5 (1%)", "d": "1.665", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, SDS", "sup": "", "pr": "28–42"}, {"c": "7704-34-9", "z": "硫磺", "e": "Sulphur", "cat": "Inorganic Salt", "f": "Powder/Granule", "ph": "N/A", "d": "2.07", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "SDS", "sup": "", "pr": ""}, {"c": "7722-84-1", "z": "雙氧水", "e": "Hydrogen Peroxide (H2O2)", "cat": "Specialty Chemical", "f": "Liquid 35-50%", "ph": "2.0-4.0", "d": "1.11-1.20", "ti": "電子/聚合物/半導體", "app": "特化製程、表面處理", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "7727-54-0", "z": "過硫酸銨", "e": "Ammonium Persulfate (APS)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7732-18-5", "z": "殺菌配方水溶液", "e": "Biocide Formulation (Aqueous)", "cat": "Biocide", "f": "", "ph": "", "d": "", "ti": "水處理/塗料/MWF/日化", "app": "殺菌、防腐、防霉", "doc": "CoA, SDS, TDS", "sup": "", "pr": ""}, {"c": "7757-83-7", "z": "亞硫酸鈉", "e": "Sodium Sulfite (Na2SO3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7758-19-2", "z": "亞氯酸鈉", "e": "Sodium Chlorite (NaClO2)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7758-29-4", "z": "三聚磷酸鈉", "e": "STPP (Sodium Tripolyphosphate)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "", "sup": "", "pr": ""}, {"c": "7778-54-3", "z": "次氯酸鈣", "e": "Calcium Hypochlorite (Ca(ClO)2)", "cat": "", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7778-77-0", "z": "磷酸二氫鉀", "e": "KH2PO4 (Potassium Dihydrogen Phosphate)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "CoA, SDS", "sup": "", "pr": ""}, {"c": "7782-63-0", "z": "硫酸亞鐵", "e": "Ferrous Sulfate (FeSO4)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "7790-92-3", "z": "次氯酸", "e": "Hypochlorous Acid (HOCl)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "78-93-3", "z": "丁酮", "e": "MEK (Methyl Ethyl Ketone)", "cat": "Solvent", "f": "Liquid", "ph": "N/A", "d": "0.805", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "TDS", "sup": "", "pr": ""}, {"c": "79-14-1", "z": "乙醇酸", "e": "Glycolic Acid", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "79-21-0", "z": "過氧乙酸", "e": "Peracetic Acid (PAA)", "cat": "Acid", "f": "Liquid 5-15%", "ph": "1.0-2.0", "d": "1.04-1.13", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "CoA, PDS, SDS", "sup": "", "pr": ""}, {"c": "79-33-4", "z": "L-乳酸", "e": "L-Lactic Acid", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "79-46-9", "z": "2-硝基丙烷", "e": "2-NP (2-Nitropropane)", "cat": "硝基烷烴", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "240–320"}, {"c": "8001-54-5", "z": "烷基二甲基苄基氯化銨", "e": "ADBAC (Alkyl Dimethyl Benzyl Ammonium Chloride)", "cat": "季銨鹽殺菌", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": "120–180"}, {"c": "8002-13-9", "z": "菜籽油", "e": "Rapeseed Oil", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "", "sup": "", "pr": ""}, {"c": "8002-43-5", "z": "大豆卵磷脂", "e": "Soy Lecithin", "cat": "", "f": "", "ph": "", "d": "", "ti": "食品營養", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "8002-74-2", "z": "石蠟", "e": "Paraffin Wax", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "SDS", "sup": "", "pr": ""}, {"c": "8016-70-4", "z": "氫化大豆油", "e": "Hydrogenated Soybean Oil (Wax)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "PDS, SDS", "sup": "", "pr": ""}, {"c": "84-69-5", "z": "鄰苯二甲酸二異丁酯", "e": "DIBP (Diisobutyl Phthalate)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "PDS, SDS", "sup": "", "pr": ""}, {"c": "87-90-1", "z": "三氯異氰尿酸", "e": "TCCA (Trichloroisocyanuric Acid)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9002-07-7", "z": "胰蛋白酶", "e": "Trypsin", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9002-88-4", "z": "聚乙烯蠟", "e": "PE Wax (Polyethylene Wax)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "", "sup": "", "pr": ""}, {"c": "9003-01-4", "z": "聚丙烯酸", "e": "PAA (Polyacrylic Acid)", "cat": "聚羧酸分散", "f": "", "ph": "", "d": "", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": "80–150"}, {"c": "9003-05-8", "z": "聚丙烯醯胺", "e": "PAM (Polyacrylamide)", "cat": "", "f": "Powder/Emulsion", "ph": "7.0-14.0", "d": "0.7-0.8", "ti": "水處理", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9003-11-6", "z": "聚醚型消泡劑", "e": "Poloxamer (Pluronic)", "cat": "Surfactant", "f": "", "ph": "", "d": "", "ti": "清洗/農藥/MWF/塗料", "app": "乳化、分散、潤濕、消泡", "doc": "SDS", "sup": "", "pr": ""}, {"c": "9003-39-8", "z": "聚乙烯吡咯烷酮", "e": "PVP (Polyvinylpyrrolidone)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9004-34-6", "z": "微晶纖維素", "e": "MCC (Microcrystalline Cellulose)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9004-65-3", "z": "羥丙基甲基纖維素", "e": "HPMC (Hypromellose)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9016-45-9", "z": "壬基酚聚氧乙烯醚", "e": "NP Ethoxylate (Nonylphenol Ethoxylate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9036-19-5", "z": "辛基酚聚氧乙烯醚", "e": "Octylphenol Ethoxylate", "cat": "Surfactant", "f": "", "ph": "", "d": "", "ti": "清洗/農藥/MWF/塗料", "app": "乳化、分散、潤濕、消泡", "doc": "CoA", "sup": "", "pr": ""}, {"c": "9048-46-8", "z": "牛血清白蛋白", "e": "BSA (Bovine Serum Albumin)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "9067-32-7", "z": "玻尿酸鈉", "e": "Sodium Hyaluronate", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "95-14-7", "z": "苯並三唑", "e": "BTA (Benzotriazole)", "cat": "銅緩蝕劑", "f": "", "ph": "", "d": "", "ti": "金屬加工液", "app": "", "doc": "", "sup": "", "pr": "180–260"}, {"c": "95481-62-2", "z": "二元酸酯", "e": "DBE (Dibasic Ester)", "cat": "Solvent", "f": "", "ph": "", "d": "", "ti": "塗料/印刷/電子/清洗", "app": "溶解、稀釋、清洗、萃取", "doc": "", "sup": "", "pr": ""}, {"c": "96-05-9", "z": "甲基丙烯酸烯丙酯", "e": "AMA (Allyl Methacrylate)", "cat": "", "f": "", "ph": "", "d": "", "ti": "", "app": "", "doc": "SDS, TDS", "sup": "", "pr": ""}, {"c": "96-48-0", "z": "γ-丁內酯", "e": "GBL (Gamma-Butyrolactone)", "cat": "Oil/Lubricant", "f": "", "ph": "", "d": "", "ti": "金屬加工/橡膠/潤滑油/食品", "app": "基礎油、潤滑、加工助劑", "doc": "TDS", "sup": "", "pr": ""}, {"c": "98-67-9", "z": "苯酚磺酸", "e": "Phenolsulfonic Acid", "cat": "Acid", "f": "", "ph": "", "d": "", "ti": "CIP清洗/電子/水處理/食品", "app": "酸洗、蝕刻、pH調節、除鏽", "doc": "PDS, SDS", "sup": "", "pr": ""}, {"c": "98-92-0", "z": "菸鹼醯胺", "e": "Niacinamide (Vitamin B3)", "cat": "", "f": "", "ph": "", "d": "", "ti": "生技/個護", "app": "", "doc": "", "sup": "", "pr": ""}, {"c": "999-97-3", "z": "六甲基二矽氮烷", "e": "HMDS (Hexamethyldisilazane)", "cat": "Inorganic Salt", "f": "", "ph": "", "d": "", "ti": "電鍍/玻璃/清洗/水處理", "app": "配方原料、螯合、緩衝", "doc": "SDS, TDS", "sup": "", "pr": ""}];
@@ -832,5 +1262,11 @@ function render(){
   else{pg.style.display="none";}
 }
 </script>
-</body>
-</html>
+
+
+<div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out; animation: 2s ease-in-out 0s infinite normal none running claude-pulse; box-shadow: rgba(217, 119, 87, 0.5) 0px 0px 10px inset, rgba(217, 119, 87, 0.3) 0px 0px 20px inset, rgba(217, 119, 87, 0.1) 0px 0px 30px inset;"></div><div id="claude-agent-stop-container" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); justify-content: center; align-items: center; pointer-events: none; z-index: 2147483647;"><button id="claude-agent-stop-button" style="position: relative; transform: translateY(0px); padding: 12px 16px; background: rgb(250, 249, 245); color: rgb(20, 20, 19); border: 0.5px solid rgba(31, 30, 29, 0.4); border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: rgba(217, 119, 87, 0.24) 0px 40px 80px, rgba(217, 119, 87, 0.24) 0px 4px 14px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity: 1; user-select: none; pointer-events: auto; white-space: nowrap; margin: 0px auto;">
+      <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="margin-right: 12px; vertical-align: middle;">
+        <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm40-112v56a12,12,0,0,1-12,12H100a12,12,0,0,1-12-12V100a12,12,0,0,1,12-12h56A12,12,0,0,1,168,100Z"></path>
+      </svg>
+      <span style="vertical-align: middle;">Stop Claude</span>
+    </button></div></body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
