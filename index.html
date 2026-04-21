@@ -601,6 +601,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft Jh
   transition: all .15s;
 }
 .filter-panel-v5 .fp-clear:hover { background: #EF4444; color: #fff; }
+.filter-panel-v5 .fp-apply-row { display:flex; justify-content:flex-end; margin-top:10px; }
+.filter-panel-v5 .fp-apply-btn { font-size:13px; font-weight:700; color:#fff; background:linear-gradient(135deg,#2563EB,#1D4ED8); border:none; border-radius:8px; padding:7px 22px; cursor:pointer; transition:all .2s; box-shadow:0 2px 8px rgba(37,99,235,.3); }
+.filter-panel-v5 .fp-apply-btn:hover { background:linear-gradient(135deg,#1D4ED8,#1E40AF); box-shadow:0 4px 14px rgba(37,99,235,.45); transform:translateY(-1px); }
 
 .filter-row {
   display: grid;
@@ -893,6 +896,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft Jh
         <span class="reg-pill rp-tox4" onclick="filterByReg2('第四類')">🔬 第四類毒化物</span>
         <span class="reg-pill rp-existing" onclick="filterByReg2('既有物質')">📋 既有化學物質</span>
       </div>
+    <div class="fp-apply-row"><button class="fp-apply-btn" onclick="applyFiltersV5()">🔍 套用篩選</button></div>
     </div>
   </div><div id="results-toolbar-v5" class="results-toolbar">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -1259,6 +1263,49 @@ function render(){
   if(tp>1){pg.style.display="flex";document.getElementById("pi").textContent=(S.pg+1)+" / "+tp;document.getElementById("pp").disabled=S.pg===0;document.getElementById("pn").disabled=S.pg>=tp-1;}
   else{pg.style.display="none";}
 }
+
+window.applyFilter = function(key, val){
+  if(key==='cat') S.cat=val;
+  else if(key==='ind') S.ind=val;
+  else if(key==='doc') S.doc=val;
+  S.pg=0;
+};
+
+window.applyFiltersV5 = function(){
+  var fc=document.getElementById('fC-v5'); if(fc) S.cat=fc.value;
+  var fi=document.getElementById('fI-v5'); if(fi) S.ind=fi.value;
+  var fd=document.getElementById('fDoc-v5'); if(fd) S.doc=fd.value;
+  S.pg=0;
+  render(filt());
+  showToast('篩選已套用','🔍');
+};
+
+window.filterByReg2 = function(val){
+  S.reg=val||null; S.pg=0;
+  document.querySelectorAll('.reg-pill').forEach(function(b){ b.classList.remove('active'); });
+  var target=val ? '[onclick="filterByReg2(\'' + val + '\')"]' : '.reg-pill.rp-all';
+  var btn=document.querySelector(target); if(btn) btn.classList.add('active');
+  render(filt());
+};
+
+window.clearAllFilters = function(){
+  S.cat=''; S.ind=''; S.doc=''; S.reg=null; S.s=''; S.pg=0;
+  ['si','fC-v5','fI-v5','fDoc-v5'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.querySelectorAll('.reg-pill').forEach(function(b){ b.classList.remove('active'); });
+  var allBtn=document.querySelector('.reg-pill.rp-all'); if(allBtn) allBtn.classList.add('active');
+  render(filt());
+  showToast('已清除所有篩選','\u2715');
+};
+
+window.toggleFilters = function(){
+  S.sf=!S.sf;
+  var fp=document.getElementById('filter-panel-v5');
+  var btn=document.querySelector('[onclick="toggleFilters()"]');
+  if(fp) fp.style.display=S.sf?'none':'block';
+  if(btn) btn.innerHTML=S.sf?'▶ 展開篩選':'▲ 收合篩選';
+};
 </script>
 
 
