@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水處理化學品採購選擇系統 | 震豐股份有限公司</title>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2563a8;
+    --accent: #0ea5e9;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --tab-cooling: #0ea5e9;
+    --tab-boiler: #f97316;
+    --tab-waste: #8b5cf6;
+    --tab-ro: #06b6d4;
+    --tab-drinking: #22c55e;
+    --tab-food: #ec4899;
+    --tab-solvent: #78716c;
+    --tab-lube: #92400e;
+    --tab-resin: #6d28d9;
+    --tab-medical: #be185d;
+    --tab-refrig: #0e7490;
+    --tab-specialty: #4d7c0f;
+    --tab-hardware: #b45309;
+    --tab-aviation: #1e40af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 16px 24px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+  .header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { font-size: 20px; font-weight: 700; letter-spacing: .5px; }
+  .header-subtitle { font-size: 12px; opacity: .8; margin-top: 2px; }
+  .header-badge { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 20px; padding: 4px 14px; font-size: 12px; }
+
+  /* Search & Controls */
+  .controls { background: white; border-bottom: 1px solid var(--gray-200); padding: 14px 24px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .controls-inner { max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  #searchInput { width: 100%; padding: 9px 12px 9px 38px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 14px; outline: none; transition: border-color .2s; }
+  #searchInput:focus { border-color: var(--accent); }
+  .ctrl-btn { padding: 8px 16px; border: 1.5px solid var(--gray-200); border-radius: 8px; background: white; font-size: 13px; cursor: pointer; color: var(--gray-700); transition: all .2s; white-space: nowrap; }
+  .ctrl-btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .ctrl-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .inquiry-btn { padding: 8px 18px; border: none; border-radius: 8px; background: var(--success); color: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; white-space: nowrap; }
+  .inquiry-btn:hover { background: #15803d; }
+  .count-badge { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--gray-600); white-space: nowrap; }
+
+  /* Tabs */
+  .tabs { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
+  .tab-list { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tab-btn { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid transparent; border-radius: 10px 10px 0 0; cursor: pointer; font-size: 14px; font-weight: 600; background: white; color: var(--gray-500); transition: all .2s; border-bottom: none; }
+  .tab-btn:hover { color: var(--gray-700); background: var(--gray-50); }
+  .tab-btn.active { color: white; border-color: transparent; border-bottom: none; }
+  .tab-btn .tab-icon { font-size: 18px; }
+  .tab-btn .tab-count { background: rgba(255,255,255,.25); border-radius: 20px; padding: 1px 8px; font-size: 11px; }
+  .tab-btn:not(.active) .tab-count { background: var(--gray-100); color: var(--gray-500); }
+  .tab-btn[data-tab="cooling"].active { background: var(--tab-cooling); }
+  .tab-btn[data-tab="boiler"].active { background: var(--tab-boiler); }
+  .tab-btn[data-tab="waste"].active { background: var(--tab-waste); }
+  .tab-btn[data-tab="ro"].active { background: var(--tab-ro); }
+  .tab-btn[data-tab="drinking"].active { background: var(--tab-drinking); }
+  .tab-btn[data-tab="food"].active { background: var(--tab-food); }
+  .tab-btn[data-tab="solvent"].active { background: var(--tab-solvent); }
+  .tab-btn[data-tab="lube"].active { background: var(--tab-lube); }
+  .tab-btn[data-tab="resin"].active { background: var(--tab-resin); }
+  .tab-btn[data-tab="medical"].active { background: var(--tab-medical); }
+  .tab-btn[data-tab="refrig"].active { background: var(--tab-refrig); }
+  .tab-btn[data-tab="specialty"].active { background: var(--tab-specialty); }
+  .tab-btn[data-tab="hardware"].active { background: var(--tab-hardware); }
+  .tab-btn[data-tab="aviation"].active { background: var(--tab-aviation); }
+  .flash-high { color: #dc2626; font-weight: 700; }
+  .flash-mid { color: #d97706; font-weight: 700; }
+  .flash-low { color: #16a34a; font-weight: 700; }
+  .badge-bio { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+  .badge-nobio { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+
+  /* Content */
+  .content { max-width: 1400px; margin: 0 auto; padding: 0 24px 32px; }
+  .tab-content { display: none; background: white; border-radius: 0 12px 12px 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); overflow: hidden; }
+  .tab-content.active { display: block; }
+
+  /* Category pills */
+  .cat-bar { padding: 16px 20px 12px; border-bottom: 1px solid var(--gray-200); background: var(--gray-50); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .cat-label { font-size: 12px; color: var(--gray-500); font-weight: 600; margin-right: 4px; }
+  .cat-pill { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--gray-200); background: white; font-size: 12px; cursor: pointer; color: var(--gray-600); transition: all .2s; white-space: nowrap; }
+  .cat-pill:hover { border-color: var(--gray-300); background: var(--gray-50); }
+  .cat-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { background: var(--gray-800); color: white; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 12.5px; white-space: nowrap; position: sticky; top: 0; }
+  thead th.sortable { cursor: pointer; user-select: none; }
+  thead th.sortable:hover { background: var(--gray-700); }
+  tbody tr { border-bottom: 1px solid var(--gray-100); transition: background .15s; cursor: pointer; }
+  tbody tr:hover { background: #eff6ff; }
+  tbody tr.selected { background: #dbeafe; }
+  tbody td { padding: 10px 14px; vertical-align: middle; }
+  .td-name { font-weight: 600; color: var(--gray-800); }
+  .td-en { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .td-cas { font-family: monospace; font-size: 12px; color: var(--primary-light); }
+  .td-conc { font-size: 12px; color: var(--gray-700); max-width: 120px; }
+  .td-note { font-size: 12px; color: var(--gray-600); max-width: 200px; }
+  .td-check { width: 36px; text-align: center; }
+  .row-cb { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-yes { background: #dcfce7; color: #16a34a; }
+  .badge-checking { background: #fef9c3; color: #a16207; }
+  .badge-na { background: var(--gray-100); color: var(--gray-500); }
+  .badge-star { background: #fff7ed; color: #ea580c; }
+  .badge-star2 { background: #fef3c7; color: #b45309; font-size: 12px; }
+  .badge-cat { background: #eff6ff; color: var(--primary-light); font-size: 11px; }
+
+  /* Priority dot */
+  .priority-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .p-core { background: #dc2626; }
+  .p-rec { background: #f97316; }
+  .p-alt { background: #94a3b8; }
+
+  /* Empty row */
+  .empty-row td { padding: 48px; text-align: center; color: var(--gray-400); font-size: 14px; }
+
+  /* Summary bar */
+  .summary-bar { padding: 10px 20px; background: var(--gray-50); border-top: 1px solid var(--gray-200); display: flex; gap: 20px; align-items: center; font-size: 12px; color: var(--gray-600); flex-wrap: wrap; }
+  .summary-bar b { color: var(--gray-800); }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 16px; width: 640px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: flex-start; justify-content: space-between; }
+  .modal-title { font-size: 18px; font-weight: 700; color: var(--gray-800); }
+  .modal-en { font-size: 13px; color: var(--gray-500); margin-top: 3px; }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray-400); padding: 0 4px; }
+  .modal-close:hover { color: var(--gray-700); }
+  .modal-body { padding: 20px 24px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .info-item { background: var(--gray-50); border-radius: 8px; padding: 12px 14px; }
+  .info-label { font-size: 11px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .info-value { font-size: 14px; color: var(--gray-800); font-weight: 600; }
+  .info-value.mono { font-family: monospace; color: var(--primary-light); }
+  .detail-section { margin-bottom: 16px; }
+  .detail-section h4 { font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .detail-section p { font-size: 14px; color: var(--gray-700); line-height: 1.6; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-add { padding: 9px 20px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-add:hover { background: #15803d; }
+  .btn-cancel { padding: 9px 20px; background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 14px; cursor: pointer; }
+
+  /* Inquiry panel */
+  .inquiry-panel { display: none; position: fixed; bottom: 24px; right: 24px; width: 320px; background: white; border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.2); border: 1.5px solid var(--gray-200); z-index: 900; }
+  .inquiry-panel.open { display: block; }
+  .inq-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+  .inq-title { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+  .inq-close-btn { background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 18px; }
+  .inq-list { padding: 8px 16px; max-height: 200px; overflow-y: auto; }
+  .inq-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+  .inq-item:last-child { border-bottom: none; }
+  .inq-remove { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 16px; padding: 0 4px; }
+  .inq-remove:hover { color: var(--danger); }
+  .inq-footer { padding: 12px 16px; border-top: 1px solid var(--gray-200); }
+  .inq-export { width: 100%; padding: 9px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .inq-export:hover { background: var(--primary-light); }
+  .inq-empty { padding: 20px; text-align: center; color: var(--gray-400); font-size: 13px; }
+
+  /* Floating btn */
+  .float-btn { display: none; position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; background: var(--success); color: white; border: none; border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px rgba(22,163,74,.4); z-index: 899; gap: 8px; align-items: center; }
+  .float-btn.show { display: flex; }
+  .float-btn:hover { background: #15803d; }
+  #inqCount { background: rgba(255,255,255,.3); border-radius: 12px; padding: 1px 7px; font-size: 12px; }
+
+  /* Compliance badges */
+  .badge-toxic { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; font-weight: 700; }
+  .badge-reg106 { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .badge-safe { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+  .badge-pa { background: #fdf4ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+  tr.has-toxic { border-left: 3px solid #dc2626; }
+  tr.has-toxic td:first-child { background: #fff5f5; }
+  .reg-col { white-space: nowrap; }
+
+  /* Responsive */
+  @media(max-width: 768px) {
+    .header-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .info-grid { grid-template-columns: 1fr; }
+    table { font-size: 12px; }
+    .tab-btn { padding: 8px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">💧 水處理化學品採購選擇系統</div>
+      <div class="header-subtitle">Water Treatment Chemicals Procurement Tool | 2026 Q2 版本</div>
+    </div>
+    <div class="header-badge">十四大應用領域 · 320+ 品項</div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="controls-inner">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="搜尋產品名稱、CAS No.、功能分類…">
+    </div>
+    <button class="ctrl-btn active" id="filterAll" onclick="setSourceFilter('all')">全部</button>
+    <button class="ctrl-btn" id="filterYes" onclick="setSourceFilter('yes')">✅ 可供應</button>
+    <button class="ctrl-btn" id="filterCheck" onclick="setSourceFilter('checking')">🔍 確認中</button>
+    <button class="ctrl-btn" id="filterToxic" onclick="setSourceFilter('toxic')" style="border-color:#fca5a5;color:#b91c1c;">⚠️ 毒化物列管</button>
+    <button class="ctrl-btn" id="filterReg106" onclick="setSourceFilter('reg106')" style="border-color:#93c5fd;color:#1d4ed8;">📋 既有化學物質</button>
+    <span class="count-badge" id="visibleCount">顯示 0 筆</span>
+    <button class="inquiry-btn" onclick="toggleInquiry()">📋 詢價清單 <span id="floatCount">0</span></button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab-list">
+    <button class="tab-btn active" data-tab="cooling" onclick="switchTab('cooling')">
+      <span class="tab-icon">🌀</span> 冷卻水塔 <span class="tab-count" id="cnt-cooling">23</span>
+    </button>
+    <button class="tab-btn" data-tab="boiler" onclick="switchTab('boiler')">
+      <span class="tab-icon">🔥</span> 鍋爐水 <span class="tab-count" id="cnt-boiler">16</span>
+    </button>
+    <button class="tab-btn" data-tab="waste" onclick="switchTab('waste')">
+      <span class="tab-icon">♻️</span> 廢水處理 <span class="tab-count" id="cnt-waste">21</span>
+    </button>
+    <button class="tab-btn" data-tab="ro" onclick="switchTab('ro')">
+      <span class="tab-icon">🔬</span> RO/膜系統 <span class="tab-count" id="cnt-ro">12</span>
+    </button>
+    <button class="tab-btn" data-tab="drinking" onclick="switchTab('drinking')">
+      <span class="tab-icon">🚰</span> 飲用水 <span class="tab-count" id="cnt-drinking">10</span>
+    </button>
+    <button class="tab-btn" data-tab="food" onclick="switchTab('food')">
+      <span class="tab-icon">🍽️</span> 食品加工用水 <span class="tab-count" id="cnt-food">8</span>
+    </button>
+    <button class="tab-btn" data-tab="solvent" onclick="switchTab('solvent')">
+      <span class="tab-icon">🧴</span> 碳氫溶劑 <span class="tab-count" id="cnt-solvent">18</span>
+    </button>
+    <button class="tab-btn" data-tab="lube" onclick="switchTab('lube')">
+      <span class="tab-icon">🔧</span> 潤滑油/添加劑 <span class="tab-count" id="cnt-lube">53</span>
+    </button>
+    <button class="tab-btn" data-tab="resin" onclick="switchTab('resin')">
+      <span class="tab-icon">🎨</span> 樹脂/塗料/接著劑 <span class="tab-count" id="cnt-resin">28</span>
+    </button>
+    <button class="tab-btn" data-tab="medical" onclick="switchTab('medical')">
+      <span class="tab-icon">💊</span> 醫藥/個人護理 <span class="tab-count" id="cnt-medical">23</span>
+    </button>
+    <button class="tab-btn" data-tab="refrig" onclick="switchTab('refrig')">
+      <span class="tab-icon">❄️</span> 冷凍/空調 <span class="tab-count" id="cnt-refrig">22</span>
+    </button>
+    <button class="tab-btn" data-tab="specialty" onclick="switchTab('specialty')">
+      <span class="tab-icon">⚗️</span> 特用化學 <span class="tab-count" id="cnt-specialty">44</span>
+    </button>
+    <button class="tab-btn" data-tab="hardware" onclick="switchTab('hardware')">
+      <span class="tab-icon">🔩</span> 五金/電子/光電 <span class="tab-count" id="cnt-hardware">24</span>
+    </button>
+    <button class="tab-btn" data-tab="aviation" onclick="switchTab('aviation')">
+      <span class="tab-icon">✈️</span> 航空用化學品 <span class="tab-count" id="cnt-aviation">7</span>
+    </button>
+  </div>
+</div>
+
+<div class="content">
+  <!-- Each tab content injected by JS -->
+  <div id="tab-cooling" class="tab-content active"></div>
+  <div id="tab-boiler" class="tab-content"></div>
+  <div id="tab-waste" class="tab-content"></div>
+  <div id="tab-ro" class="tab-content"></div>
+  <div id="tab-drinking" class="tab-content"></div>
+  <div id="tab-food" class="tab-content"></div>
+  <div id="tab-solvent" class="tab-content"></div>
+  <div id="tab-lube" class="tab-content"></div>
+  <div id="tab-resin" class="tab-content"></div>
+  <div id="tab-medical" class="tab-content"></div>
+  <div id="tab-refrig" class="tab-content"></div>
+  <div id="tab-specialty" class="tab-content"></div>
+  <div id="tab-hardware" class="tab-content"></div>
+  <div id="tab-aviation" class="tab-content"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="mTitle"></div>
+        <div class="modal-en" id="mEn"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">CAS No.</div><div class="info-value mono" id="mCas"></div></div>
+        <div class="info-item"><div class="info-label">功能分類</div><div class="info-value" id="mCat"></div></div>
+        <div class="info-item"><div class="info-label">主要有效成分</div><div class="info-value" id="mIngredient"></div></div>
+        <div class="info-item"><div class="info-label">典型使用濃度</div><div class="info-value" id="mConc"></div></div>
+        <div class="info-item"><div class="info-label">供應狀態</div><div class="info-value" id="mSource"></div></div>
+        <div class="info-item"><div class="info-label">應用領域</div><div class="info-value" id="mDomain"></div></div>
+      </div>
+      <div class="detail-section" id="mCompSection">
+        <h4>台灣法規狀態（TCCSCA / 既有化學物質）</h4>
+        <p id="mComp" style="line-height:1.7;"></p>
+      </div>
+      <div class="detail-section">
+        <h4>作用機理</h4>
+        <p id="mMech"></p>
+      </div>
+      <div class="detail-section">
+        <h4>採購重點 / 技術備註</h4>
+        <p id="mNote"></p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModalDirect()">關閉</button>
+      <button class="btn-add" id="mAddBtn" onclick="addToInquiryFromModal()">➕ 加入詢價清單</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inquiry Panel -->
+<div class="inquiry-panel" id="inquiryPanel">
+  <div class="inq-header">
+    <span class="inq-title">📋 詢價清單</span>
+    <button class="inq-close-btn" onclick="toggleInquiry()">✕</button>
+  </div>
+  <div id="inqList" class="inq-list"><div class="inq-empty">尚未加入任何品項</div></div>
+  <div class="inq-footer">
+    <button class="inq-export" onclick="exportInquiry()">📤 複製詢價清單（CSV 格式）</button>
+  </div>
+</div>
+
+<script>
+// ==================== REGULATORY DATA ====================
+// 台灣毒性及關注化學物質管理法 (TCCSCA) 列管清單 - 344項（環境部化學物質管理署）
+// 106項既有化學物質登錄清單（化學局）
+const TOXIC_344 = {
+  '50-00-0':   {no:'#2',   zh:'甲醛', level:'第四類'},
+  '7782-50-5': {no:'#8',   zh:'氯（液氯）', level:'第一類'},
+  '302-01-2':  {no:'#29',  zh:'聯胺（肼）', level:'第四類'},
+  '79-06-1':   {no:'#19',  zh:'丙烯醯胺（PAM單體殘留）', level:'第四類'},
+  '108-31-6':  {no:'#312', zh:'順丁烯二酸酐', level:'關注化學物質'},
+  '110-16-7':  {no:'#313', zh:'順丁烯二酸', level:'關注化學物質'},
+};
+const REG_106 = {
+  '10043-01-3': {no:'#2',  zh:'硫酸鋁'},
+  '108-91-8':   {no:'#23', zh:'環己胺'},
+  '7722-84-1':  {no:'#52', zh:'過氧化氫'},
+  '7631-90-5':  {no:'#85', zh:'亞硫酸氫鈉'},
+  '7664-93-9':  {no:'#87', zh:'硫酸'},
+};
+
+// ==================== SOLVENT DATA ====================
+// 碳氫溶劑產品線（來源：Solvent_tool / rd_material_tool）
+// Isopar 系列（ExxonMobil）、Eidsol 環保系列、Shell GTL Sarasol 系列
+const SOLVENTS = [
+  // Isopar 系列
+  {id:'s01', lineC:'Isopar 系列', name:'Isopar C',     flash:-2,   ibp:99,  fbp:104, density:699, visc:0.68, arom:0.001, bio:false, apps:'噴霧劑推進劑、電子精密清洗、快乾溶劑'},
+  {id:'s02', lineC:'Isopar 系列', name:'Isopar E',     flash:7,    ibp:115, fbp:140, density:723, visc:0.80, arom:0.002, bio:false, apps:'乾洗溶劑、膠黏劑稀釋、油墨溶劑'},
+  {id:'s03', lineC:'Isopar 系列', name:'Isopar G',     flash:44,   ibp:162, fbp:177, density:746, visc:1.13, arom:0.001, bio:false, apps:'農藥乳化劑載體、塗料溶劑、金屬清洗'},
+  {id:'s04', lineC:'Isopar 系列', name:'Isopar H',     flash:60,   ibp:181, fbp:193, density:761, visc:1.48, arom:0.001, bio:false, apps:'金屬加工液、橡膠/塑膠加工、印刷油墨'},
+  {id:'s05', lineC:'Isopar 系列', name:'Isopar L',     flash:66,   ibp:185, fbp:198, density:764, visc:1.59, arom:0.010, bio:false, apps:'鑽井液、印刷油墨、蠟製品'},
+  {id:'s06', lineC:'Isopar 系列', name:'Isopar M',     flash:97,   ibp:227, fbp:254, density:790, visc:3.85, arom:0.010, bio:false, apps:'製程油、潤滑添加劑、蠟/拋光劑'},
+  // Eidsol 環保系列（可生物降解）
+  {id:'s07', lineC:'Eidsol 環保系列', name:'Eidsol 3310C', flash:-10,  ibp:85,  fbp:112, density:702, visc:0.71, arom:0.10, bio:true, apps:'噴霧劑載體、電子清洗、快揮發溶劑'},
+  {id:'s08', lineC:'Eidsol 環保系列', name:'Eidsol 3380E', flash:5,    ibp:114, fbp:140, density:725, visc:0.93, arom:0.02, bio:true, apps:'油墨稀釋劑、膠黏劑溶劑、金屬清洗'},
+  {id:'s09', lineC:'Eidsol 環保系列', name:'Eidsol 6510F', flash:26,   ibp:130, fbp:165, density:740, visc:1.02, arom:0.02, bio:true, apps:'塗料溶劑、農藥稀釋劑、精密金屬清洗'},
+  {id:'s10', lineC:'Eidsol 環保系列', name:'Eidsol 7690G', flash:46,   ibp:170, fbp:190, density:751, visc:1.60, arom:0.02, bio:true, apps:'金屬加工液、農藥乳化載體、橡膠加工'},
+  {id:'s11', lineC:'Eidsol 環保系列', name:'Eidsol 8210H', flash:58.5, ibp:170, fbp:215, density:760, visc:1.80, arom:0.01, bio:true, apps:'工業清洗、鑽井添加劑、金屬去脂'},
+  {id:'s12', lineC:'Eidsol 環保系列', name:'Eidsol 6610L', flash:64,   ibp:182, fbp:204, density:764, visc:2.10, arom:0.01, bio:true, apps:'印刷油墨、蠟製品加工、表面塗料'},
+  {id:'s13', lineC:'Eidsol 環保系列', name:'Eidsol 7710M', flash:98,   ibp:205, fbp:270, density:786, visc:3.85, arom:0.01, bio:true, apps:'製程油、潤滑添加劑、模具脫模劑'},
+  // Shell GTL Sarasol 系列（GTL 合成烴）
+  {id:'s14', lineC:'Shell GTL 系列', name:'Sarasol Light', flash:0,   ibp:40,  fbp:160, density:680, visc:0.80, arom:0.10, bio:true,  apps:'清洗溶劑、噴霧載體、金屬去脂'},
+  {id:'s15', lineC:'Shell GTL 系列', name:'Sarasol 40',    flash:42,  ibp:157, fbp:193, density:741, visc:1.00, arom:0.10, bio:true,  apps:'農藥乳化載體、金屬加工液、家用清潔品、印刷油墨'},
+  {id:'s16', lineC:'Shell GTL 系列', name:'Sarasol 85',    flash:89,  ibp:210, fbp:330, density:780, visc:2.70, arom:0.10, bio:true,  apps:'燈油/蠟燭燃料、工業清洗、紡織加工、鑽井液基礎油'},
+  {id:'s17', lineC:'Shell GTL 系列', name:'Sarasol 120',   flash:122, ibp:254, fbp:294, density:775, visc:2.69, arom:0.10, bio:true,  apps:'高閃火點清洗劑、化妝品載體、橡膠加工、燃料'},
+  {id:'s18', lineC:'Shell GTL 系列', name:'Sarasol Heavy', flash:200, ibp:330, fbp:515, density:820, visc:12,   arom:0.10, bio:false, apps:'高溫潤滑劑、製程油、模具脫模劑、電纜填充油'},
+];
+
+// ==================== DATA ====================
+const PRODUCTS = {
+cooling: [
+  // 殺菌滅藻劑（氧化型）
+  {id:'c1', cat:'殺菌滅藻劑（氧化型）', zh:'次氯酸鈉', en:'Sodium Hypochlorite (NaClO)', cas:'7681-52-9', ingredient:'次氯酸鈉 12-15%', conc:'2-10 ppm（以Cl₂計）', mech:'釋放HOCl氧化殺菌', note:'最常用，操作方便，但pH>8效力下降。成本極低，大宗採購優先。', src:'YES', star:false},
+  {id:'c2', cat:'殺菌滅藻劑（氧化型）', zh:'液氯', en:'Chlorine (Cl₂)', cas:'7782-50-5', ingredient:'氯氣', conc:'0.5-2 ppm 餘氯', mech:'強氧化破壞細胞壁', note:'⚠️ 毒化物列管 #8（第一類）。成本最低但需運作許可，操作需安全訓練與緊急應變計畫。', src:'NA', star:false},
+  {id:'c3', cat:'殺菌滅藻劑（氧化型）', zh:'二氯異氰尿酸鈉', en:'Sodium Dichloroisocyanurate (NaDCC)', cas:'2893-78-9', ingredient:'二氯異氰尿酸鈉', conc:'2-5 ppm（以Cl₂計）', mech:'穩定釋放有效氯', note:'固體劑型，穩定性佳，適合小型系統。運輸儲存優於液氯。', src:'CHECKING', star:false},
+  {id:'c4', cat:'殺菌滅藻劑（氧化型）', zh:'三氯異氰尿酸', en:'Trichloroisocyanuric Acid (TCCA)', cas:'87-90-1', ingredient:'三氯異氰尿酸 ≥90%', conc:'2-5 ppm（以Cl₂計）', mech:'緩慢釋放有效氯', note:'固體，高有效氯含量（≥90%）。游泳池及工業冷卻兩用，詢價量大。', src:'YES', star:false},
+  {id:'c5', cat:'殺菌滅藻劑（氧化型）', zh:'溴系殺菌劑（活性溴）', en:'Stabilized Liquid Bromine', cas:'7647-15-6', ingredient:'溴化鈉+氧化劑', conc:'1-3 ppm（以Br₂計）', mech:'生成HOBr，寬pH殺菌', note:'高pH下效力優於氯，推薦冷卻水塔使用。pH 7-9均有效。', src:'CHECKING', star:false},
+  {id:'c5b', cat:'殺菌滅藻劑（氧化型）', zh:'BCDMH（溴氯二甲基乙內醯脲）', en:'1-Bromo-3-Chloro-5,5-Dimethylhydantoin', cas:'16079-88-2', ingredient:'BCDMH ≥96%', conc:'0.2-1.0 ppm（以活性溴計）', mech:'水解釋放HOBr+HOCl，雙鹵素協同殺菌', note:'★ Ecolab/Nalco 指定料號 R-50333。固體片劑，操作安全，寬pH有效（6-9）。儲運優於液溴，台灣冷卻水高端應用首選。', src:'YES', star:true, supplier:'Ecolab/Nalco'},
+  {id:'c6', cat:'殺菌滅藻劑（氧化型）', zh:'二氧化氯', en:'Chlorine Dioxide (ClO₂)', cas:'10049-04-4', ingredient:'二氧化氯', conc:'0.1-1 ppm', mech:'選擇性氧化，不產生THMs', note:'不與氨反應，需現場製備，殺菌力強。適合軍團菌防控場合。', src:'NA', star:false},
+  {id:'c7', cat:'殺菌滅藻劑（氧化型）', zh:'過氧乙酸 (PAA)', en:'Peracetic Acid', cas:'79-21-0', ingredient:'PAA 15% + H₂O₂ + 醋酸', conc:'5-50 ppm', mech:'強氧化，分解為醋酸+水+O₂', note:'★ 環保型，無THMs，雙效殺菌+除藻。ESG導向採購的優先選項。', src:'YES', star:true},
+  {id:'c8', cat:'殺菌滅藻劑（氧化型）', zh:'臭氧', en:'Ozone (O₃)', cas:'10028-15-6', ingredient:'臭氧', conc:'0.1-0.5 ppm', mech:'極強氧化力，快速殺菌', note:'設備投資高（需臭氧產生機），無殘留。適合有零排放要求的場所。', src:'NA', star:false},
+  // 非氧化型
+  {id:'c9', cat:'殺菌滅藻劑（非氧化型）', zh:'異噻唑啉酮 (CMIT/MIT)', en:'Isothiazolinone (CMIT/MIT)', cas:'26172-55-4 / 2682-20-4', ingredient:'CMIT 1.5% + MIT 0.5%', conc:'50-150 ppm', mech:'抑制蛋白質合成', note:'廣譜殺菌，對黏泥效果佳，最常用非氧化型。與氧化型交替使用防止耐藥。', src:'YES', star:false},
+  {id:'c10', cat:'殺菌滅藻劑（非氧化型）', zh:'戊二醛', en:'Glutaraldehyde', cas:'111-30-8', ingredient:'戊二醛 25-50%', conc:'50-250 ppm', mech:'交聯細胞蛋白質', note:'快速殺菌，可與氧化型交替使用。高濃度庫存需注意法規申報。', src:'YES', star:false},
+  {id:'c11', cat:'殺菌滅藻劑（非氧化型）', zh:'DBNPA', en:'DBNPA', cas:'10222-01-2', ingredient:'2,2-二溴-3-氰基丙醯胺 20%', conc:'10-50 ppm', mech:'快速殺菌，半衰期短', note:'快速降解，環境友好，常用衝擊殺菌。CMIT/MIT替代首選。', src:'YES', star:false},
+  {id:'c11b', cat:'殺菌滅藻劑（非氧化型）', zh:'BIT（苯並異噻唑啉酮）', en:'BIT (1,2-Benzisothiazolin-3-one)', cas:'2634-33-5', ingredient:'BIT ≥20% 水溶液', conc:'50-200 ppm', mech:'抑制微生物關鍵巰基酶，廣效殺菌防黴', note:'耐鹼性（pH≤10有效），穩定性優於CMIT/MIT。可與CMIT/MIT組合使用延緩耐藥性。CoA、SDS文件齊備。', src:'CHECKING', star:false},
+  {id:'c12', cat:'殺菌滅藻劑（非氧化型）', zh:'季銨鹽（QAC）', en:'Quaternary Ammonium Compounds', cas:'68391-01-5', ingredient:'十二烷基二甲基苄基氯化銨', conc:'50-200 ppm', mech:'破壞細胞膜', note:'兼具清洗作用，對藻類效果佳。起泡問題需評估現場狀況。', src:'NA', star:false},
+  // 緩蝕劑
+  {id:'c13', cat:'緩蝕劑', zh:'有機膦酸 HEDP', en:'HEDP (Etidronic Acid)', cas:'2809-21-4', ingredient:'羥基乙叉二膦酸 60%', conc:'5-20 ppm', mech:'螯合金屬+膜保護', note:'★ 核心品項，兼具阻垢+緩蝕雙效。複配首選，台灣冷卻水最常用。', src:'YES', star:true},
+  {id:'c14', cat:'緩蝕劑', zh:'有機膦酸 ATMP', en:'ATMP', cas:'6419-19-8', ingredient:'胺基三甲叉膦酸 50%', conc:'5-20 ppm', mech:'螯合Ca²⁺/Mg²⁺', note:'適合高硬度水質，常與HEDP複配。具磷含量，需評估排放管制。', src:'YES', star:false},
+  {id:'c15', cat:'緩蝕劑', zh:'有機膦羧酸 PBTC', en:'PBTC', cas:'37971-36-1', ingredient:'2-膦丁烷-1,2,4-三羧酸', conc:'10-30 ppm', mech:'耐高溫阻垢緩蝕', note:'耐氧化，可與氯系殺菌劑共用。高溫系統（>60°C）的緩蝕首選。', src:'YES', star:false},
+  {id:'c16', cat:'緩蝕劑', zh:'苯並三氮唑 (BTA)', en:'Benzotriazole (BTA)', cas:'95-14-7', ingredient:'苯並三氮唑', conc:'2-5 ppm', mech:'銅合金表面成膜保護', note:'★ 銅管/銅合金冷凝器保護必備品。含銅設備系統標配，不可省略。', src:'YES', star:true},
+  {id:'c17', cat:'緩蝕劑', zh:'甲基苯並三氮唑 (TTA)', en:'Tolyltriazole (TTA)', cas:'29385-43-1', ingredient:'甲基苯並三氮唑', conc:'2-5 ppm', mech:'銅合金鈍化保護', note:'BTA替代品，水溶性更好。pH範圍更寬，適合偏鹼性系統。', src:'YES', star:false},
+  {id:'c18', cat:'緩蝕劑', zh:'鉬酸鈉', en:'Sodium Molybdate', cas:'7631-95-0', ingredient:'鉬酸鈉', conc:'5-15 ppm', mech:'碳鋼鈍化保護膜', note:'低毒，磷排放受限時的替代方案。成本偏高，用量少時經濟可行。', src:'NA', star:false},
+  {id:'c19', cat:'緩蝕劑', zh:'鋅鹽（硫酸鋅）', en:'Zinc Sulfate', cas:'7733-02-0', ingredient:'硫酸鋅', conc:'1-3 ppm', mech:'形成鋅磷酸鹽保護膜', note:'常與磷酸鹽複配使用。注意廢水鋅排放標準（台灣 ≤5 mg/L）。', src:'CHECKING', star:false},
+  // 阻垢分散劑
+  {id:'c20', cat:'阻垢分散劑', zh:'聚丙烯酸 (PAA)', en:'Polyacrylic Acid (PAA)', cas:'9003-01-4', ingredient:'聚丙烯酸 MW~5000', conc:'5-15 ppm', mech:'晶格畸變+分散', note:'通用型分散劑，適合碳酸鈣/硫酸鈣垢。多數複配配方的基礎組分。', src:'CHECKING', star:false},
+  {id:'c21', cat:'阻垢分散劑', zh:'馬丙共聚物 (MA/AA)', en:'Maleic/Acrylic Copolymer', cas:'26677-99-6', ingredient:'馬來酸-丙烯酸共聚物', conc:'5-20 ppm', mech:'閾值阻垢+分散', note:'高硬度、高pH效果優異。高循環倍率（COC>5）系統首選分散劑。', src:'CHECKING', star:false},
+  {id:'c22', cat:'阻垢分散劑', zh:'聚環氧琥珀酸 (PESA)', en:'Polyepoxysuccinic Acid (PESA)', cas:'51274-37-4', ingredient:'聚環氧琥珀酸', conc:'10-30 ppm', mech:'綠色阻垢，無磷', note:'★ 無磷環保型，替代磷系阻垢劑。符合嚴格廢水排放要求時優先選用。', src:'NA', star:true},
+  {id:'c22b', cat:'阻垢分散劑', zh:'聚天冬胺酸 (PASP)', en:'PASP (Polyaspartic Acid)', cas:'181828-06-8', ingredient:'聚天冬胺酸 MW~2000', conc:'5-15 ppm', mech:'生物降解型阻垢劑，干擾CaCO₃/CaSO₄晶格成長', note:'★ 全生物降解（OECD 301B）綠色阻垢劑，歐盟REACH合規。PESA的環保升級選項，ESG採購評分加分項。CaCO₃/BaSO₄混合垢系統特別推薦。', src:'CHECKING', star:true},
+  {id:'c23', cat:'阻垢分散劑', zh:'硫酸（pH調整）', en:'Sulfuric Acid (H₂SO₄)', cas:'7664-93-9', ingredient:'硫酸 93-98%', conc:'依水質調整', mech:'降低pH，防止碳酸鈣結垢', note:'基礎控垢手段，pH控制在7-8.5。大宗採購，通常年約供應。', src:'YES', star:false},
+],
+
+boiler: [
+  // 除氧劑
+  {id:'b1', cat:'除氧劑', zh:'亞硫酸鈉', en:'Sodium Sulfite', cas:'7757-83-7', ingredient:'亞硫酸鈉（無水）', conc:'8 ppm / ppm O₂', mech:'Na₂SO₃ + O₂ → Na₂SO₄', note:'★ 最常用，低壓鍋爐(<40 bar)首選。成本最低，效果穩定，大宗採購基本品。', src:'YES', star:true},
+  {id:'b2', cat:'除氧劑', zh:'亞硫酸鈉（觸媒型）', en:'Catalyzed Sodium Sulfite', cas:'7757-83-7', ingredient:'亞硫酸鈉 + 氯化鈷觸媒', conc:'8 ppm / ppm O₂', mech:'觸媒加速除氧反應', note:'反應速度提升5-10倍。需快速除氧的系統（冷態啟動）推薦使用。', src:'YES', star:false},
+  {id:'b3', cat:'除氧劑', zh:'聯氨（肼）', en:'Hydrazine', cas:'302-01-2', ingredient:'水合肼 35%', conc:'0.1-0.3 ppm 殘留', mech:'N₂H₄ + O₂ → N₂ + H₂O', note:'⚠️ 高壓鍋爐用，致癌物，漸被DEHA/碳醯肼取代。採購須評估法規風險。', src:'NA', star:false},
+  {id:'b3b', cat:'除氧劑', zh:'CORRGUARD 90（聯氨衍生物）', en:'CORRGUARD 90 (Hydrazine Derivative)', cas:'10217-52-4', ingredient:'聯氨衍生物（專利低毒配方）', conc:'0.05-0.2 ppm 殘留目標值', mech:'除氧+金屬鈍化雙效，分解為低毒小分子', note:'★ 高壓鍋爐（>60 bar）除氧首選替代方案。非致癌物分類，無毒化物列管，ESG轉型最具說服力的聯氨替代品。高溫蒸汽凝結水管線保護效果優於純DEHA。', src:'YES', star:true},
+  {id:'b4', cat:'除氧劑', zh:'DEHA（二乙基羥胺）', en:'Diethylhydroxylamine (DEHA)', cas:'3710-84-7', ingredient:'DEHA', conc:'0.1-0.5 ppm 殘留', mech:'揮發性除氧+金屬鈍化', note:'★ 聯氨替代品，低毒，兼保護凝結水管線。中高壓鍋爐ESG轉型首選。', src:'YES', star:true},
+  {id:'b5', cat:'除氧劑', zh:'碳醯肼', en:'Carbohydrazide', cas:'497-18-7', ingredient:'碳醯肼', conc:'0.3 ppm / ppm O₂', mech:'除氧+分解產生CO₂+N₂', note:'聯氨替代品，FDA認可可用於食品級蒸汽鍋爐。成本略高於亞硫酸鈉。', src:'NA', star:false},
+  {id:'b6', cat:'除氧劑', zh:'丹寧酸（單寧酸）', en:'Tannin-based Oxygen Scavenger', cas:'1401-55-4', ingredient:'丹寧酸', conc:'30-80 ppm', mech:'與O₂反應+形成保護膜', note:'天然有機物，環保型，低壓鍋爐。對鐵製設備附加防腐效果。', src:'NA', star:false},
+  // 防垢劑
+  {id:'b7', cat:'防垢劑', zh:'磷酸三鈉', en:'Trisodium Phosphate (TSP)', cas:'7601-54-9', ingredient:'磷酸三鈉', conc:'維持PO₄³⁻ 20-40 ppm', mech:'沉澱Ca²⁺為磷酸鈣污泥', note:'傳統配方，低壓鍋爐沉澱軟化。用量計算依據進水硬度，需定期排污。', src:'YES', star:false},
+  {id:'b8', cat:'防垢劑', zh:'聚合磷酸鹽', en:'Polyphosphate', cas:'10124-56-8', ingredient:'六偏磷酸鈉', conc:'10-30 ppm', mech:'螯合硬度離子防垢', note:'適合中低壓鍋爐。注意高溫水解為正磷酸鹽的臨界溫度（>80°C）。', src:'YES', star:false},
+  {id:'b9', cat:'防垢劑', zh:'有機膦酸鹽 (HEDP)', en:'HEDP', cas:'2809-21-4', ingredient:'羥基乙叉二膦酸', conc:'5-15 ppm', mech:'閾值效應阻止結晶', note:'高溫穩定性佳，可用於高壓系統。與亞硫酸鈉兼容，可同時使用。', src:'YES', star:false},
+  {id:'b9b', cat:'防垢劑', zh:'DTPMPA（二乙烯三胺五亞甲基膦酸）', en:'DTPMPA (Diethylenetriaminepenta Methylenephosphonic Acid)', cas:'15827-60-8', ingredient:'DTPMPA 50% 水溶液', conc:'3-10 ppm', mech:'5個膦酸基高效螯合Fe³⁺/Ca²⁺/Mg²⁺，耐高溫穩定（>120°C）', note:'★ 高壓鍋爐及高溫系統頂級阻垢劑，螯合能力遠優於HEDP（5倍）。高硬度或含鐵量偏高水質的首選。TDS、CoA、SDS文件齊全。', src:'YES', star:true},
+  {id:'b10', cat:'防垢劑', zh:'聚合物分散劑（聚丙烯酸鈉）', en:'Sodium Polyacrylate', cas:'9003-04-7', ingredient:'聚丙烯酸鈉 MW~5000', conc:'5-20 ppm', mech:'分散污泥+防垢', note:'與磷酸鹽複配效果更佳。高濁度給水時優先考慮添加。', src:'YES', star:false},
+  {id:'b11', cat:'防垢劑', zh:'EDTA 螯合劑', en:'EDTA (Tetrasodium Salt)', cas:'64-02-8', ingredient:'EDTA 四鈉鹽', conc:'依硬度計算', mech:'強力螯合Ca²⁺/Mg²⁺/Fe³⁺', note:'高壓鍋爐(>70bar)全螯合方案。純水給水搭配使用。成本較高但效果最佳。', src:'YES', star:false},
+  // 鹼度/pH調整
+  {id:'b12', cat:'鹼度/pH調整', zh:'氫氧化鈉（燒鹼）', en:'Sodium Hydroxide (NaOH)', cas:'1310-73-2', ingredient:'氫氧化鈉 30-50%', conc:'維持pH 10.5-12', mech:'提高pH防腐蝕', note:'★ 基礎品項，調整鍋爐水鹼度。液鹼年約採購，注意儲槽安全管理。', src:'YES', star:true},
+  {id:'b13', cat:'鹼度/pH調整', zh:'碳酸鈉（蘇打灰）', en:'Soda Ash (Na₂CO₃)', cas:'497-19-8', ingredient:'碳酸鈉', conc:'依水質調整', mech:'提供OH⁻和CO₃²⁻鹼度', note:'亦用於飲用水pH調整。比NaOH溫和，適合精確pH控制場合。', src:'YES', star:false},
+  // 凝結水處理（中和胺）
+  {id:'b14', cat:'凝結水處理（中和胺）', zh:'環己胺', en:'Cyclohexylamine', cas:'108-91-8', ingredient:'環己胺', conc:'維持pH 8.5-9', mech:'揮發隨蒸汽保護凝結水管', note:'★ 短管線系統首選中和胺。揮發比（VR）高，管線較短的系統效果最佳。', src:'NA', star:true},
+  {id:'b15', cat:'凝結水處理（中和胺）', zh:'嗎啉', en:'Morpholine', cas:'110-91-8', ingredient:'嗎啉', conc:'維持pH 8.5-9', mech:'揮發性中和碳酸保護管線', note:'長管線系統，分配比適中。歐美食品廠標準配方，FDA認可。', src:'YES', star:false},
+  {id:'b16', cat:'凝結水處理（成膜胺）', zh:'十八胺 (ODA)', en:'Octadecylamine (ODA)', cas:'124-30-1', ingredient:'十八胺', conc:'0.5-3 ppm', mech:'在金屬表面形成疏水保護膜', note:'成膜型保護，減少鐵溶出。停機保護及新設備投運初期使用效果顯著。', src:'NA', star:false},
+],
+
+waste: [
+  {id:'w1', cat:'混凝劑（無機）', zh:'硫酸鋁（明礬）', en:'Aluminum Sulfate (Alum)', cas:'10043-01-3', ingredient:'硫酸鋁 Al₂(SO₄)₃', conc:'20-100 ppm', mech:'水解產生Al(OH)₃膠體吸附', note:'★ 最常用，成本低，pH 6-8效果佳。一般工廠廢水處理首選，大宗採購基礎品。', src:'YES', star:true},
+  {id:'w2', cat:'混凝劑（無機）', zh:'聚合氯化鋁 (PAC)', en:'Polyaluminium Chloride', cas:'1327-41-9', ingredient:'PAC (Al₂O₃ 28-30%)', conc:'10-50 ppm', mech:'電荷中和+橋聯吸附', note:'★ 用量少，污泥量小，台灣主流。Al₂O₃含量高者效果更佳，採購時確認規格。', src:'YES', star:true},
+  {id:'w3', cat:'混凝劑（無機）', zh:'氯化鐵', en:'Ferric Chloride (FeCl₃)', cas:'7705-08-0', ingredient:'氯化鐵 38-42%', conc:'20-100 ppm', mech:'形成Fe(OH)₃絮凝體', note:'除磷效果佳，適合低溫水。對出水色度有影響，需評估後處理。', src:'CHECKING', star:false},
+  {id:'w4', cat:'混凝劑（無機）', zh:'聚合硫酸鐵 (PFS)', en:'Polymeric Ferric Sulfate', cas:'10028-22-5', ingredient:'聚合硫酸鐵', conc:'10-60 ppm', mech:'高效吸附橋聯', note:'處理高濁度廢水效果優異。鹼度消耗低，適合低鹼度廢水。', src:'CHECKING', star:false},
+  {id:'w5', cat:'絮凝劑（有機高分子）', zh:'聚丙烯醯胺（陽離子型）', en:'Cationic PAM (C-PAM)', cas:'9003-05-8', ingredient:'C-PAM', conc:'1-5 ppm', mech:'電荷中和+橋聯絮凝', note:'★ 污泥脫水必備。離子度選擇依廢水性質（通常陽離子度20-40%最常用）。', src:'CHECKING', star:true},
+  {id:'w6', cat:'絮凝劑（有機高分子）', zh:'聚丙烯醯胺（陰離子型）', en:'Anionic PAM (A-PAM)', cas:'9003-05-8', ingredient:'A-PAM', conc:'1-5 ppm', mech:'高分子橋聯絮凝', note:'配合無機混凝劑使用，增大礬花體積。造紙廠廢水及礦業廢水常用。', src:'CHECKING', star:false},
+  {id:'w7', cat:'絮凝劑（有機高分子）', zh:'聚丙烯醯胺（非離子型）', en:'Nonionic PAM (N-PAM)', cas:'9003-05-8', ingredient:'N-PAM', conc:'1-5 ppm', mech:'吸附橋聯', note:'酸性廢水處理。不受pH影響，適合pH<6的酸性工業廢水。', src:'CHECKING', star:false},
+  {id:'w8', cat:'pH調整劑（鹼性）', zh:'氫氧化鈉（燒鹼）', en:'Sodium Hydroxide (NaOH)', cas:'1310-73-2', ingredient:'NaOH 30-50%', conc:'依pH調整', mech:'中和酸性廢水', note:'★ 最常用鹼劑，響應速度快。液鹼儲槽採購注意腐蝕性材質要求。', src:'YES', star:true},
+  {id:'w9', cat:'pH調整劑（鹼性）', zh:'氫氧化鈣（石灰乳）', en:'Calcium Hydroxide (Lime)', cas:'1305-62-0', ingredient:'Ca(OH)₂', conc:'依pH調整', mech:'中和酸+沉澱重金屬', note:'成本低，兼具混凝效果。需石灰乳製備設備，大量廢水成本最優。', src:'CHECKING', star:false},
+  {id:'w10', cat:'pH調整劑（鹼性）', zh:'碳酸鈉（蘇打灰）', en:'Soda Ash (Na₂CO₃)', cas:'497-19-8', ingredient:'Na₂CO₃', conc:'依pH調整', mech:'溫和提升pH', note:'適合要求精確控制的場合。比NaOH溫和，過量風險低。', src:'YES', star:false},
+  {id:'w11', cat:'pH調整劑（酸性）', zh:'硫酸', en:'Sulfuric Acid (H₂SO₄)', cas:'7664-93-9', ingredient:'H₂SO₄ 93-98%', conc:'依pH調整', mech:'中和鹼性廢水', note:'★ 成本低，最常用酸劑。採購需確認硫酸根對出水的影響（重金屬廠）。', src:'YES', star:true},
+  {id:'w12', cat:'pH調整劑（酸性）', zh:'鹽酸', en:'Hydrochloric Acid (HCl)', cas:'7647-01-0', ingredient:'HCl 31-36%', conc:'依pH調整', mech:'中和鹼性廢水', note:'適合需要氯離子的場合。揮發性大，儲存通風要求嚴格。', src:'YES', star:false},
+  {id:'w12b', cat:'pH調整劑（酸性）', zh:'磷酸（食品級）', en:'Phosphoric Acid 85% (Food Grade)', cas:'7664-38-2', ingredient:'H₃PO₄ ≥85.2%（澄星/CXPC，SG 1.690，GB1886.15-2015）', conc:'依pH調整，稀釋至5-10%使用', mech:'三質子酸，溫和降低pH，磷酸根助益生化系統', note:'★ 食品級認證（GB1886.15），較硫酸溫和，適合食品廠廢水pH調整。UN 1805，Class 8。GHS H290/H314/H318。非毒化物列管。供應商：澄星（CXPC）、Nylex。', src:'YES', star:true},
+  {id:'w13', cat:'重金屬捕捉劑', zh:'硫化鈉型', en:'Sodium Sulfide (Na₂S)', cas:'1313-82-2', ingredient:'硫化鈉', conc:'依金屬濃度', mech:'與重金屬形成硫化物沉澱', note:'最常見，價格便宜，但可能產生H₂S氣體。酸性環境使用須特別注意。', src:'CHECKING', star:false},
+  {id:'w14', cat:'重金屬捕捉劑', zh:'DTC型（二硫代氨基甲酸鹽）', en:'DTC / Poly-DTC', cas:'128-04-1', ingredient:'二甲基二硫代氨基甲酸鈉', conc:'依金屬濃度', mech:'螯合+沉澱重金屬', note:'★ 效果佳，可處理螯合態金屬（EDTA錯合態）。電鍍廠重金屬達標首選。', src:'CHECKING', star:true},
+  {id:'w15', cat:'重金屬捕捉劑', zh:'TMT型', en:'TMT-15 (Trimercaptotriazine)', cas:'17766-26-6', ingredient:'三聚硫氰酸三鈉鹽 15%', conc:'依金屬濃度', mech:'強力螯合多種重金屬', note:'反應速度快，抗干擾能力強。可同時捕捉多種重金屬，適合複合廢水。', src:'CHECKING', star:false},
+  {id:'w16', cat:'消泡劑', zh:'有機矽消泡劑', en:'Silicone-based Defoamer', cas:'63148-62-9', ingredient:'聚二甲基矽氧烷', conc:'10-100 ppm', mech:'降低表面張力破泡', note:'★ 效果最佳，持久性好。生化處理系統及污泥處理常用，性價比最高。', src:'YES', star:true},
+  {id:'w17', cat:'消泡劑', zh:'聚醚消泡劑', en:'Polyether Defoamer', cas:'9003-11-6', ingredient:'PPG/PEG 共聚物', conc:'50-300 ppm', mech:'擴展膜機制消泡', note:'適合生化系統，無矽殘留。食品廠廢水處理需無矽要求時使用。', src:'CHECKING', star:false},
+  {id:'w18', cat:'氧化還原劑', zh:'亞硫酸氫鈉（還原劑）', en:'Sodium Bisulfite (Reducing Agent)', cas:'7631-90-5', ingredient:'NaHSO₃', conc:'依Cr⁶⁺濃度', mech:'還原六價鉻為三價鉻', note:'電鍍廢水鉻還原處理必備。pH<3條件下使用，Cr⁶⁺去除率>99%。', src:'CHECKING', star:false},
+  {id:'w19', cat:'氧化還原劑', zh:'次氯酸鈉（氧化劑）', en:'Sodium Hypochlorite (Oxidizer)', cas:'7681-52-9', ingredient:'NaClO 12%', conc:'依CN⁻濃度', mech:'氧化氰化物為無害物', note:'電鍍廢水氰化物破壞必備。鹼性條件（pH>10）使用，分兩段式氧化更安全。', src:'CHECKING', star:false},
+  {id:'w20', cat:'脫色劑', zh:'脫色絮凝劑', en:'Decolorizing Agent', cas:'55295-98-2', ingredient:'二氰胺-甲醛縮聚物', conc:'50-200 ppm', mech:'電荷中和+吸附脫色', note:'印染廢水脫色專用。脫色率需依廢水色度實際小試後確認用量。', src:'CHECKING', star:false},
+  {id:'w21', cat:'廢水消毒劑', zh:'次氯酸鈉', en:'Sodium Hypochlorite', cas:'7681-52-9', ingredient:'NaClO 12%', conc:'5-15 ppm（以Cl₂計）', mech:'殺滅病原微生物', note:'廢水放流前消毒，符合放流水標準。接觸槽停留時間≥30分鐘。', src:'YES', star:false},
+],
+
+ro: [
+  {id:'r1', cat:'RO阻垢劑', zh:'膦酸鹽系阻垢劑', en:'Phosphonate-based Antiscalant', cas:'2809-21-4', ingredient:'HEDP / ATMP / PBTC 複配', conc:'2-5 ppm', mech:'閾值效應抑制結晶', note:'★ 最常用，適合碳酸鈣垢為主的水質。需依LSI（朗格里爾指數）計算投加量。', src:'NA', star:true},
+  {id:'r2', cat:'RO阻垢劑', zh:'聚合物系阻垢劑', en:'Polymer-based Antiscalant', cas:'26099-09-2', ingredient:'聚馬來酸/聚丙烯酸複配', conc:'2-5 ppm', mech:'晶格畸變+分散', note:'適合硫酸鈣/硫酸鋇垢。高SDI水質的RO系統推薦使用。', src:'NA', star:false},
+  {id:'r3', cat:'RO阻垢劑', zh:'矽垢專用阻垢劑', en:'Silica-specific Antiscalant', cas:'-', ingredient:'專利有機聚合物配方', conc:'3-8 ppm', mech:'抑制SiO₂聚合沉積', note:'高矽水質（Si>20 mg/L）專用，回收率可提升。需與膜廠確認相容性。', src:'NA', star:false},
+  {id:'r4', cat:'RO清洗劑（高pH）', zh:'鹼性有機清洗劑', en:'High pH Membrane Cleaner', cas:'1310-73-2', ingredient:'NaOH + 表面活性劑 + 螯合劑', conc:'pH 11-12', mech:'溶解有機物/生物膜', note:'★ RO膜清洗首先進行高pH清洗（有機污染）。清洗溫度35-40°C效果最佳。', src:'NA', star:true},
+  {id:'r5', cat:'RO清洗劑（高pH）', zh:'矽垢清洗劑', en:'Silica Cleaner', cas:'1310-73-2', ingredient:'NaOH + 氟化物/矽酸鹽溶解劑', conc:'pH 11-12', mech:'溶解矽垢', note:'重度矽垢專用配方。清洗前需確認膜廠的清洗指南與藥劑相容性。', src:'NA', star:false},
+  {id:'r6', cat:'RO清洗劑（低pH）', zh:'酸性清洗劑', en:'Low pH Membrane Cleaner', cas:'77-92-9', ingredient:'檸檬酸/鹽酸 + 螯合劑', conc:'pH 2-3', mech:'溶解碳酸鈣/金屬氧化物', note:'★ 高pH清洗後進行低pH清洗。碳酸鈣/鐵錳垢為主時此步驟效果顯著。', src:'NA', star:true},
+  {id:'r7', cat:'RO清洗劑（低pH）', zh:'無磷酸性清洗劑', en:'Phosphorus-free Acid Cleaner', cas:'77-92-9', ingredient:'檸檬酸 + 有機酸配方', conc:'pH 2-3', mech:'環保型除垢', note:'磷排放受限場合使用。有機酸配方，廢清洗液可直接生化處理。', src:'NA', star:false},
+  {id:'r7b', cat:'RO清洗劑（高pH）', zh:'GLDA（穀氨酸二乙酸四鈉）', en:'GLDA (Tetrasodium Glutamate Diacetate)', cas:'51981-21-6', ingredient:'GLDA 47% 水溶液（Dissolvine GL-47-S）', conc:'0.1-0.5% v/v，pH 10-11', mech:'生物降解型螯合劑，溶解金屬氧化物垢（Fe/Ca/Mn）及有機膠體', note:'★ EDTA的可生物降解替代品（OECD 301B）。RO膜/超濾膜/換熱器高pH清洗主劑，廢清洗液可直接生化處理。食品廠、半導體廠零排放需求的首選綠色螯合劑。CoA、SDS文件齊全。', src:'YES', star:true},
+  {id:'r8', cat:'還原劑（脫氯）', zh:'亞硫酸氫鈉', en:'Sodium Bisulfite (SBS)', cas:'7631-90-5', ingredient:'NaHSO₃', conc:'1.46 ppm / ppm Cl₂', mech:'還原餘氯保護膜', note:'★ RO進水脫氯必備，保護膜不被氧化降解。ORP<200 mV為合格標準。', src:'NA', star:true},
+  {id:'r9', cat:'還原劑（脫氯）', zh:'偏亞硫酸氫鈉', en:'Sodium Metabisulfite (SMBS)', cas:'7681-57-4', ingredient:'Na₂S₂O₅', conc:'3 ppm / ppm Cl₂', mech:'釋放SO₂還原餘氯', note:'固體形式，方便儲運。溶液需每日新鮮配製，避免失效。', src:'NA', star:false},
+  {id:'r10', cat:'膜系統殺菌劑', zh:'非氧化型殺菌劑 (DBNPA)', en:'DBNPA', cas:'10222-01-2', ingredient:'2,2-二溴-3-氰基丙醯胺', conc:'10-30 ppm', mech:'快速殺菌，短期保護', note:'與膜材質相容（PA膜），停機保護及衝擊殺菌首選。降解快，無殘留。', src:'YES', star:false},
+  {id:'r11', cat:'膜系統殺菌劑', zh:'亞硫酸氫鈉保存液', en:'Sodium Bisulfite Preservation', cas:'7631-90-5', ingredient:'NaHSO₃ 0.5-1%', conc:'5000-10000 ppm', mech:'抑菌+除氧保存', note:'長期停機（7天以上）保存用。每2週更換一次保存液維持效果。', src:'NA', star:false},
+  {id:'r12', cat:'膜保存劑', zh:'甲醛溶液', en:'Formaldehyde Solution', cas:'50-00-0', ingredient:'甲醛 0.5-1%', conc:'5000-10000 ppm', mech:'防止微生物滋生', note:'長期保存（>30天）使用，需充分沖洗才能恢復運行。採購需注意法規申報。', src:'NA', star:false},
+],
+
+drinking: [
+  {id:'d1', cat:'消毒劑', zh:'次氯酸鈉', en:'Sodium Hypochlorite', cas:'7681-52-9', ingredient:'NaClO 12%', conc:'餘氯 0.2-1.0 ppm', mech:'釋放HOCl殺菌', note:'★ 台灣自來水最常用消毒劑。採購需符合飲用水設備及藥品檢驗標準（NSF/ANSI 60）。', src:'YES', star:true},
+  {id:'d2', cat:'消毒劑', zh:'液氯', en:'Chlorine Gas', cas:'7782-50-5', ingredient:'Cl₂', conc:'餘氯 0.2-1.0 ppm', mech:'溶於水生成HOCl', note:'大型淨水廠（>10萬 CMD）使用，操作需特殊安全措施。成本最低。', src:'NA', star:false},
+  {id:'d3', cat:'消毒劑', zh:'二氧化氯', en:'Chlorine Dioxide', cas:'10049-04-4', ingredient:'ClO₂', conc:'0.1-0.8 ppm', mech:'選擇性氧化殺菌', note:'不產生THMs，不受pH影響，需現場製備。適合有THMs超標風險的水源。', src:'NA', star:false},
+  {id:'d4', cat:'混凝劑', zh:'聚合氯化鋁 (PAC)', en:'Polyaluminium Chloride', cas:'1327-41-9', ingredient:'PAC (Al₂O₃ 28-30%)', conc:'10-50 ppm', mech:'電荷中和+橋聯絮凝', note:'★ 台灣自來水公司主流混凝劑。採購需符合NSF/ANSI 60飲用水級標準。', src:'YES', star:true},
+  {id:'d5', cat:'混凝劑', zh:'硫酸鋁', en:'Aluminum Sulfate', cas:'10043-01-3', ingredient:'Al₂(SO₄)₃', conc:'20-80 ppm', mech:'水解混凝', note:'傳統混凝劑，成本低。需確認飲用水級規格（鐵含量、砷含量符合標準）。', src:'YES', star:false},
+  {id:'d6', cat:'混凝劑', zh:'氯化鐵', en:'Ferric Chloride', cas:'7705-08-0', ingredient:'FeCl₃', conc:'10-50 ppm', mech:'形成Fe(OH)₃絮凝', note:'低溫低濁水效果佳。出水鐵含量需符合飲用水標準（台灣 ≤0.3 mg/L）。', src:'NA', star:false},
+  {id:'d7', cat:'氧化劑', zh:'高錳酸鉀', en:'Potassium Permanganate', cas:'7722-64-7', ingredient:'KMnO₄', conc:'1-5 ppm', mech:'氧化Fe²⁺/Mn²⁺為不溶態', note:'除鐵除錳專用，兼有助凝效果。過量投加會造成出水帶粉紅色，需精確控制。', src:'NA', star:false},
+  {id:'d8', cat:'pH調整', zh:'氫氧化鈉', en:'Sodium Hydroxide', cas:'1310-73-2', ingredient:'NaOH', conc:'依水質', mech:'提升pH', note:'淨水程序pH控制，須使用食品/飲用水級規格。', src:'YES', star:false},
+  {id:'d9', cat:'pH調整', zh:'硫酸', en:'Sulfuric Acid', cas:'7664-93-9', ingredient:'H₂SO₄', conc:'依水質', mech:'降低pH', note:'結晶軟化程序pH調整。須確認飲用水級規格（重金屬含量符合標準）。', src:'YES', star:false},
+  {id:'d9b', cat:'pH調整', zh:'磷酸（食品級）', en:'Phosphoric Acid 85% (Food Grade)', cas:'7664-38-2', ingredient:'H₃PO₄ ≥85.2%（食品級，SG 1.690）', conc:'依水質調整', mech:'弱三質子酸，溫和調降pH，兼補充磷酸根', note:'飲用水處理pH調整輔助，須確認NSF/ANSI 60食品級認證。UN 1805，Class 8腐蝕品，GHS H290/H314。非毒化物列管，台灣既有化學物質：未列管。供應商：澄星（CXPC）。', src:'YES', star:false},
+  {id:'d10', cat:'助凝劑', zh:'聚丙烯醯胺（陰離子型）', en:'Anionic PAM', cas:'9003-05-8', ingredient:'A-PAM', conc:'0.1-1 ppm', mech:'增強絮凝體大小', note:'配合PAC使用，加速沉澱。飲用水級用量極低，殘留丙烯醯胺單體需符合規範。', src:'YES', star:false},
+],
+
+food: [
+  {id:'f1', cat:'食品級殺菌劑', zh:'過氧乙酸 (PAA) 15%', en:'Peracetic Acid 15%', cas:'79-21-0', ingredient:'PAA 15% + H₂O₂ + 醋酸 + HEDP', conc:'CIP: 200-300 ppm / 接觸面: ≤315 ppm / 直接接觸食品: ≤1 ppm', mech:'強氧化殺菌，分解無毒殘留（醋酸+水+O₂）', note:'★★ 核心推薦品 — 台灣食藥署2024年核准，准用免沖洗。乳品、飲料廠CIP必備，ESG首選。', src:'YES', star2:true},
+  {id:'f2', cat:'食品級殺菌劑', zh:'次氯酸鈉（食品級）', en:'Food-grade Sodium Hypochlorite', cas:'7681-52-9', ingredient:'NaClO 食品級', conc:'100-200 ppm', mech:'HOCl殺菌', note:'最常用，但產生THMs，接觸食品需沖洗。採購須確認食品級認證（NSF/ANSI 60）。', src:'NA', star:false},
+  {id:'f3', cat:'食品級殺菌劑', zh:'二氧化氯（食品級）', en:'Food-grade Chlorine Dioxide', cas:'10049-04-4', ingredient:'ClO₂ 現場製備', conc:'1-5 ppm', mech:'選擇性氧化殺菌', note:'不影響風味，水產/飲料業常用。需現場製備，設備投資需評估。', src:'NA', star:false},
+  {id:'f4', cat:'食品級殺菌劑', zh:'過氧化氫（食品級）', en:'Food-grade Hydrogen Peroxide', cas:'7722-84-1', ingredient:'H₂O₂ 35%', conc:'150-500 ppm', mech:'氧化殺菌', note:'分解為水+O₂，無殘留。包材滅菌（UHT）及無菌室殺菌的標準配方。', src:'YES', star:false},
+  {id:'f5', cat:'CIP清洗劑', zh:'鹼性CIP清洗劑', en:'Alkaline CIP Cleaner', cas:'1310-73-2', ingredient:'NaOH + 表面活性劑 + 螯合劑', conc:'1-3% v/v', mech:'溶解油脂/蛋白質/乳垢', note:'★ 乳品/飲料CIP第一步。溫度75-85°C效果最佳，需食品級認證。', src:'CHECKING', star:true},
+  {id:'f6', cat:'CIP清洗劑', zh:'酸性CIP清洗劑', en:'Acid CIP Cleaner', cas:'7664-38-2', ingredient:'磷酸/硝酸 + 表面活性劑', conc:'0.5-2% v/v', mech:'溶解礦物質垢/乳石', note:'鹼洗後酸洗，除水垢。溫度60-70°C。避免與前一鹼洗液直接混合。', src:'CHECKING', star:false},
+  {id:'f6b', cat:'CIP清洗劑', zh:'磷酸 85%（食品級原料）', en:'Phosphoric Acid 85% Food Grade - CIP Raw Material', cas:'7664-38-2', ingredient:'H₃PO₄ ≥85.2%（澄星/CXPC，SG 1.690，GB1886.15-2015 食品添加劑規格）', conc:'0.5-2% v/v（稀釋使用）', mech:'溫和酸性，清除礦物質垢/乳石，緩衝pH能力強', note:'★ 食品廠CIP酸洗標準磷酸原料。食品安全認證完整（GB1886.15）。UN 1805 Class 8，GHS H290/H314/H318。非毒化物列管，操作相對安全。可用於直接接觸食品設備清洗，免沖洗濃度需遵循法規。供應商：澄星（CXPC）、Nylex。', src:'YES', star:true},
+  {id:'f7', cat:'CIP清洗劑', zh:'酵素清洗劑', en:'Enzyme-based Cleaner', cas:'-', ingredient:'蛋白酶/脂肪酶/澱粉酶複合', conc:'0.3-1% v/v', mech:'生物降解有機污垢', note:'低溫清洗（30-50°C），節能環保。適合熱敏性設備（塑料管線）。', src:'CHECKING', star:false},
+  {id:'f8', cat:'水質處理', zh:'食品級軟水鹽', en:'Food-grade Salt for Softener', cas:'7647-14-5', ingredient:'NaCl 99.5%', conc:'依設備規格', mech:'再生離子交換樹脂', note:'防止鍋爐/蒸氣設備結垢。採購需確認食品級純度（NaCl≥99.5%，重金屬符合標準）。', src:'YES', star:false},
+]
+};
+
+const CAT_PRODUCTS = {
+  lube: [
+    '特殊胺 Alpamine N41','車輛用油複合劑 Automotive Additive Package','消泡劑 Antifoam','抗氧化劑 Antioxidant',
+    '苯并三氮唑 BTA','硼酸 Boric Acid','煞車油 Brake Fluid','殺菌劑 Biocide','氯化蠟 CP 152P',
+    '氯化脂肪酸甲酯 CME 35','複合磺酸鈣潤滑脂 Calcium Sulfonate Complex Grease','水箱精 Coolant',
+    '腐蝕抑制劑 Corrosion Inhibitor','十二烷基二元酸 DDDA','二乙二醇單丁醚 Diethylene Glycol Monobutyl Ether (DB)',
+    '二環己胺 Dicyclohexylamine','二甘醇胺 Diglycolamine','柴油精 Diesel Fuel Additive',
+    '清淨劑 Detergent in Engine Oil','乙醇胺 Ethanolamine','放電加工油 Electric Discharge Machining Oil',
+    '水箱精防銹複合劑 Engine Coolant Additive Package','乳化劑 Emulsifier','抗磨極壓劑 EP/Anti-wear',
+    '抗燃液壓油 Fire Resistant Hydraulic Fluid','脂肪酸 Fatty Acid','減磨劑 Friction Modifier',
+    '汽油精 Gasoline Fuel Additive','異己二醇 HG Hexasol','碳氫溶劑 Hydracarbon Solvent',
+    '高黏度指數三類基礎油 Higher VI Group 3 Base Oils','異丙醇胺 Isopropanolamine',
+    '工業用油複合劑 Industrial Additive Package','潤滑提升劑 Lubricity Additive',
+    '金屬加工用油複合劑 MWF Additive Package','金屬鈍化劑 Metal Deactivator','環烷基基礎油 Naphthenic Base Oils',
+    '氯化蠟 Plastoil 1040','氯化蠟 Plastoil 45T','氯化蠟 Plastoil 1058','氯化蠟 Plastoil 152',
+    '聚丁烯 Polybutene','流動點下降劑 Pour Point Depressant','聚醚 PAG Polyalkylene Glycols',
+    '聚α烯烴 PAO Polyalphaolefins','冷凍油 Refrigerant Lubricant','防銹劑 Rust Preventative',
+    '癸二酸 Sebacic Acid','石油磺酸鈉 Clilube 460A','亞硝酸鈉 Sodium Nitrite',
+    '合成酯 Synthetic Esters','甲基苯并三氮唑 TTA','黏度指數提升劑 Viscosity Index Improver'
+  ],
+  resin: [
+    '2-Hydropropyl Methacrylate (2-HPMA)','2-Hydroethyl Methacrylate (2-HEMA)',
+    '2-Ethylhexyl Methacrylate (2-EHMA)','2-Hydroxy Propyl Acrylate (2-HPA)',
+    '2-Hydroxy Ethyl Acrylate (2-HEA)','2-Hydroxy Butyl Acrylate (2-HBA)',
+    'Dimer Diamine','Dimer Polyol','Dimer Diol','Isobutyl Methacrylate (IBMA)',
+    'Lauryl Methacrylate (LMA)','Methacrylic Acid (MAA)','Methyl Methacrylate (MMA)',
+    'N-Butyl Methacrylate (NBMA)','Polyether Polyol','Polyester Polyol',
+    'Stearyl Methacrylate (SMA)','Tertbutyl Methacrylate (TBMA)','Tertbutyl Acrylate (TBA)',
+    '壬二酸 Azelaic Acid','癸二酸 Sebacic Acid','紫外線吸收劑','防腐劑','消泡劑',
+    '甲醛吸收劑','增韌劑','乳化劑/反應型乳化劑','環保型碳氫溶劑'
+  ],
+  medical: [
+    '苯甲醇 Benzyl Alcohol','碳酸二甲酯 DMC','二異丙基乙胺 DIPEA','二甲基亞碸 DMSO',
+    '二甲基乙醯胺 DMAC','二乙基甲醯胺 DEF','乙二胺 EDA','甘油縮甲醛 Glycerol Formal',
+    '過氧化氫 H2O2','己二醇 HG','乙酸異丙酯 IPAC','異丙醇 IPA','醫藥級礦物油 Mineral Oil',
+    '醋酸甲酯 MEAC','二氯甲烷 MEC','丙二醇 MPG','正庚烷 n-Heptane',
+    '甲基吡咯烷酮 NMP','聚異丁烯 PIB','碳酸丙烯酯 PC','聚乙二醇 PEG',
+    '三乙醇胺 TEA 99','四氫呋喃 THF'
+  ],
+  refrig: [
+    'HFO-1234ze','HFO-1234zd','HFO-1234yf','HC-290','HFC-290','HFC-507A',
+    'HFC-32','HFC-410A','HFC-407C','HFC-404A','HFC-134a','HCFC-22',
+    '礦物油 (黏度100) Mineral Oil','礦物油 (黏度68) Mineral Oil','礦物油 (黏度32) Mineral Oil',
+    '合成油 RL220H Polyol Ester Oil/POE','合成油 RL170H Polyol Ester Oil/POE',
+    '合成油 RL100H Polyol Ester Oil/POE','合成油 RL68H Polyol Ester Oil/POE',
+    '合成油 RL46H Polyol Ester Oil/POE','合成油 RL32H Polyol Ester Oil/POE',
+    '合成油 RL22H Polyol Ester Oil/POE'
+  ],
+  specialty: [
+    '鋁緩蝕劑 940 AL','消泡劑 Antifoam','特殊胺 Alpamine N41','殺菌劑 Biocide','銅緩蝕劑 BTA',
+    '二乙二醇單丁醚 BDGE','苯甲醇 Benzyl Alcohol','12烷基二元酸 DDDA','碳酸二甲酯 DMC',
+    '二異丙醇胺 DIPA','二環己胺 DCHA','二甘醇胺 DGA','二甲氨基丙胺 DMAPA',
+    '二甲基乙醇胺 DMEA','二乙醇胺 DEA','二甲基亞碸 DMSO','二甲基乙醯胺 DMAC',
+    '二乙基甲醯胺 DEF','乳化劑 Emulsifier','乙二胺 EDA','D 系列 Hydrocarbons D Fluid',
+    '己二醇 HG','乙酸異丙酯 IPAC','異構烷烴 Isoparaffin (EIDSOL)','異丙醇 IPA',
+    '嗎啉 Morpholine','醋酸甲酯 MEAC','單異丙醇胺 MIPA','單乙醇胺 MEA',
+    '甲基環己烷 MCH','丙二醇 MPG','二氯甲烷 MEC','清洗劑 EidTec™',
+    '甲基吡咯烷酮 NMP','正庚烷 n-Heptane','碳酸丙烯酯 PC','聚乙二醇 PEG',
+    '防銹劑 Sarkosyl O','矽油 Silicon Oil','亞硝酸鈉 Sodium Nitrite',
+    '金屬鈍化劑 TTA','三異丙醇胺 TIPA','三乙醇胺 TEA','四氫呋喃 THF'
+  ],
+  hardware: [
+    '清洗溶劑 Dowclene 1621','清洗溶劑 Dowclene 1601','HFE-AE3100','HFE-AE3000',
+    'Isoparaffin','二氯甲烷 MEC','瀝青殘膠清洗劑 EidTec™/T1620/T1650',
+    '研磨液清洗劑 Siliron/CF-2436C','定心芯取油清洗劑 T1620/T1650',
+    'Total 環保碳氫清洗劑','天然橘精清洗劑','環保水性清洗劑','助焊劑錫膏清洗劑',
+    '防鏽油','PM清洗劑','MIM清洗劑','亞硝酸鈉','淬火油清洗劑',
+    '前處理油汙清洗劑','水性消泡劑','水性防鏽劑','除油脫脂劑','環保除鏽劑','精密鑄造清洗劑'
+  ],
+  aviation: [
+    'LPS 1 無油潤滑劑','LPS 2 重油潤滑劑','LPS 3 優質防銹劑',
+    'CFC Free 不含氟氯化碳電子清潔劑','Electro 電子接點清潔劑',
+    'LST 螺絲鬆脫劑','CrossCheck 防篡改扭矩指示膏'
+  ]
+};
+
+const DOMAIN_NAMES = {
+  cooling: '冷卻水塔', boiler: '鍋爐水', waste: '廢水處理', ro: 'RO/膜系統', drinking: '飲用水處理', food: '食品加工用水',
+  lube: '潤滑油/添加劑', resin: '樹脂/塗料/接著劑', medical: '醫藥/個人護理',
+  refrig: '冷凍/空調', specialty: '特用化學', hardware: '五金/電子/光電', aviation: '航空用化學品'
+};
+
+// State
+let currentTab = 'cooling';
+let currentCat = 'all';
+let sourceFilter = 'all';
+let searchTerm = '';
+let inquiryList = [];
+let currentModalProduct = null;
+
+// ==================== RENDER ====================
+function getCategories(tab) {
+  const cats = [...new Set(PRODUCTS[tab].map(p => p.cat))];
+  return cats;
+}
+
+function renderTab(tab) {
+  const container = document.getElementById('tab-' + tab);
+  const cats = getCategories(tab);
+  const catId = 'cat-bar-' + tab;
+
+  let catPills = `<div class="cat-bar" id="${catId}">
+    <span class="cat-label">功能分類</span>
+    <span class="cat-pill active" onclick="setCat('${tab}','all',this)">全部品項</span>`;
+  cats.forEach(c => {
+    catPills += `<span class="cat-pill" onclick="setCat('${tab}','${c.replace(/'/g,"\\'")}',this)">${c}</span>`;
+  });
+  catPills += `</div>`;
+
+  const tableHtml = `
+    <div class="table-wrap">
+      <table id="tbl-${tab}">
+        <thead>
+          <tr>
+            <th class="td-check"><input type="checkbox" onchange="selectAllVisible(this,'${tab}')" title="全選"/></th>
+            <th>化學品名稱</th>
+            <th>功能分類</th>
+            <th>CAS No.</th>
+            <th>主要成分</th>
+            <th>典型使用濃度</th>
+            <th>供應狀態</th>
+            <th class="reg-col">法規狀態</th>
+            <th>採購重點</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-${tab}"></tbody>
+      </table>
+    </div>
+    <div class="summary-bar" id="summary-${tab}"></div>`;
+
+  container.innerHTML = catPills + tableHtml;
+}
+
+function getComplianceInfo(p) {
+  const cas1 = p.cas ? p.cas.split('/')[0].trim() : '';
+  return { toxic: TOXIC_344[cas1] || null, reg: REG_106[cas1] || null };
+}
+
+function renderRows(tab) {
+  const tbody = document.getElementById('tbody-' + tab);
+  if (!tbody) return;
+  const products = PRODUCTS[tab];
+  const filtered = products.filter(p => {
+    if (currentCat !== 'all' && tab === currentTab && p.cat !== currentCat) return false;
+    if (sourceFilter === 'yes' && p.src !== 'YES') return false;
+    if (sourceFilter === 'checking' && p.src !== 'CHECKING') return false;
+    if (sourceFilter === 'toxic') { const {toxic} = getComplianceInfo(p); if (!toxic) return false; }
+    if (sourceFilter === 'reg106') { const {reg} = getComplianceInfo(p); if (!reg) return false; }
+    if (searchTerm) {
+      const s = searchTerm.toLowerCase();
+      return p.zh.toLowerCase().includes(s) || p.en.toLowerCase().includes(s) ||
+             (p.cas && p.cas.toLowerCase().includes(s)) || p.cat.toLowerCase().includes(s) ||
+             (p.note && p.note.toLowerCase().includes(s));
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">🔍 未找到符合條件的品項</td></tr>`;
+    updateSummary(tab, 0, products.length);
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const srcBadge = p.src === 'YES' ? '<span class="badge badge-yes">✅ 可供應</span>' :
+                     p.src === 'CHECKING' ? '<span class="badge badge-checking">🔍 確認中</span>' :
+                     '<span class="badge badge-na">— 暫無</span>';
+    const starBadge = p.star2 ? '<span class="badge badge-star2">⭐⭐ 核心推薦</span> ' :
+                      p.star ? '<span class="badge badge-star">⭐ 推薦</span> ' : '';
+    const {toxic, reg} = getComplianceInfo(p);
+    const inInquiry = inquiryList.find(i => i.id === p.id);
+    let rowClass = inInquiry ? 'selected' : '';
+    let compBadge = '';
+    if (toxic) {
+      compBadge += `<span class="badge badge-toxic">⚠️ 毒化物 ${toxic.no}</span> `;
+      rowClass = (rowClass + ' has-toxic').trim();
+    }
+    if (reg) {
+      compBadge += `<span class="badge badge-reg106">📋 既有 ${reg.no}</span>`;
+    }
+    if (!toxic && !reg) {
+      compBadge = '<span class="badge badge-safe">✓ 一般</span>';
+    }
+    return `<tr class="${rowClass}" onclick="openModal('${p.id}','${tab}')" id="row-${p.id}">
+      <td class="td-check" onclick="event.stopPropagation()">
+        <input type="checkbox" class="row-cb" ${inInquiry?'checked':''} onchange="toggleInquiryItem('${p.id}','${tab}',this)" title="加入詢價">
+      </td>
+      <td>
+        <div class="td-name">${starBadge}${p.zh}</div>
+        <div class="td-en">${p.en}</div>
+      </td>
+      <td><span class="badge badge-cat">${p.cat}</span></td>
+      <td class="td-cas">${p.cas}</td>
+      <td style="font-size:12px;color:var(--gray-600);max-width:130px;">${p.ingredient}</td>
+      <td class="td-conc">${p.conc}</td>
+      <td>${srcBadge}</td>
+      <td class="reg-col">${compBadge}</td>
+      <td class="td-note">${(p.note||'').replace(/★★|★/g,'').trim().substring(0,60)}${p.note&&p.note.length>60?'…':''}</td>
+    </tr>`;
+  }).join('');
+
+  updateSummary(tab, filtered.length, products.length);
+  updateVisibleCount();
+}
+
+function updateSummary(tab, shown, total) {
+  const s = document.getElementById('summary-' + tab);
+  if (!s) return;
+  const yes = PRODUCTS[tab].filter(p=>p.src==='YES').length;
+  const checking = PRODUCTS[tab].filter(p=>p.src==='CHECKING').length;
+  s.innerHTML = `<span>顯示 <b>${shown}</b> / ${total} 筆</span>
+    <span>✅ 可供應 <b>${yes}</b> 項</span>
+    <span>🔍 確認中 <b>${checking}</b> 項</span>
+    <span>— 暫無 <b>${total-yes-checking}</b> 項</span>`;
+}
+
+function updateVisibleCount() {
+  if (currentTab === 'solvent') {
+    const f = SOLVENTS.filter(s => {
+      if (solventCat !== 'all' && s.lineC !== solventCat) return false;
+      if (searchTerm) { const t = searchTerm.toLowerCase(); return s.name.toLowerCase().includes(t)||s.apps.toLowerCase().includes(t); }
+      return true;
+    });
+    document.getElementById('visibleCount').textContent = `顯示 ${f.length} 筆`;
+    return;
+  }
+  const products = PRODUCTS[currentTab];
+  if (!products) { document.getElementById('visibleCount').textContent = '顯示 0 筆'; return; }
+  const filtered = products.filter(p => {
+    if (currentCat !== 'all' && p.cat !== currentCat) return false;
+    if (sourceFilter === 'yes' && p.src !== 'YES') return false;
+    if (sourceFilter === 'checking' && p.src !== 'CHECKING') return false;
+    if (sourceFilter === 'toxic') { const {toxic} = getComplianceInfo(p); if (!toxic) return false; }
+    if (sourceFilter === 'reg106') { const {reg} = getComplianceInfo(p); if (!reg) return false; }
+    if (searchTerm) {
+      const s = searchTerm.toLowerCase();
+      return p.zh.includes(s) || p.en.toLowerCase().includes(s) || (p.cas&&p.cas.includes(s)) || p.cat.includes(s);
+    }
+    return true;
+  });
+  document.getElementById('visibleCount').textContent = `顯示 ${filtered.length} 筆`;
+}
+
+// ==================== SOLVENT RENDER ====================
+let solventCat = 'all';
+
+function renderSolventTab() {
+  const container = document.getElementById('tab-solvent');
+  if (!container) return;
+  const series = [...new Set(SOLVENTS.map(s => s.lineC))];
+  let catPills = `<div class="cat-bar" id="cat-bar-solvent">
+    <span class="cat-label">產品系列</span>
+    <span class="cat-pill active" onclick="setSolventCat('all',this)">全部系列</span>`;
+  series.forEach(s => {
+    catPills += `<span class="cat-pill" onclick="setSolventCat('${s.replace(/'/g,"\\'")}',this)">${s}</span>`;
+  });
+  catPills += `</div>`;
+  const tableHtml = `
+    <div class="table-wrap">
+      <table id="tbl-solvent">
+        <thead>
+          <tr>
+            <th>產品名稱</th>
+            <th>產品系列</th>
+            <th>閃點 (°C)</th>
+            <th>沸程 IBP→FBP (°C)</th>
+            <th>密度 (kg/m³)</th>
+            <th>黏度 (mPa·s)</th>
+            <th>芳香烴 (%)</th>
+            <th>生物降解</th>
+            <th>主要應用</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-solvent"></tbody>
+      </table>
+    </div>
+    <div class="summary-bar" id="summary-solvent"></div>`;
+  container.innerHTML = catPills + tableHtml;
+  renderSolventRows();
+}
+
+function setSolventCat(cat, el) {
+  solventCat = cat;
+  document.querySelectorAll('#cat-bar-solvent .cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderSolventRows();
+}
+
+function renderSolventRows() {
+  const tbody = document.getElementById('tbody-solvent');
+  if (!tbody) return;
+  const filtered = SOLVENTS.filter(s => {
+    if (solventCat !== 'all' && s.lineC !== solventCat) return false;
+    if (searchTerm) {
+      const t = searchTerm.toLowerCase();
+      return s.name.toLowerCase().includes(t) || s.lineC.toLowerCase().includes(t) || s.apps.toLowerCase().includes(t);
+    }
+    return true;
+  });
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="9">🔍 未找到符合條件的品項</td></tr>`;
+  } else {
+    tbody.innerHTML = filtered.map(s => {
+      const flashCls = s.flash < 23 ? 'flash-high' : s.flash < 60 ? 'flash-mid' : 'flash-low';
+      const bioBadge = s.bio ? '<span class="badge badge-bio">♻️ 可降解</span>' : '<span class="badge badge-nobio">— 非降解</span>';
+      const lineCls = s.lineC === 'Shell GTL 系列' ? 'badge-star' : s.lineC === 'Eidsol 環保系列' ? 'badge-safe' : 'badge-cat';
+      return `<tr onclick="openSolventModal('${s.id}')">
+        <td><div class="td-name">${s.name}</div></td>
+        <td><span class="badge ${lineCls}">${s.lineC}</span></td>
+        <td class="${flashCls}">${s.flash}</td>
+        <td class="td-cas">${s.ibp} → ${s.fbp}</td>
+        <td>${s.density}</td>
+        <td>${s.visc}</td>
+        <td>${s.arom}</td>
+        <td>${bioBadge}</td>
+        <td class="td-note">${s.apps}</td>
+      </tr>`;
+    }).join('');
+  }
+  const sm = document.getElementById('summary-solvent');
+  if (sm) sm.innerHTML = `<span>顯示 <b>${filtered.length}</b> / ${SOLVENTS.length} 筆</span>
+    <span>♻️ 可生物降解 <b>${SOLVENTS.filter(x=>x.bio).length}</b> 項</span>
+    <span>🔴 閃點 &lt;23°C (易燃) <b>${SOLVENTS.filter(x=>x.flash<23).length}</b> 項</span>
+    <span>🟡 閃點 23-60°C <b>${SOLVENTS.filter(x=>x.flash>=23&&x.flash<60).length}</b> 項</span>
+    <span>🟢 閃點 ≥60°C <b>${SOLVENTS.filter(x=>x.flash>=60).length}</b> 項</span>`;
+  updateVisibleCount();
+}
+
+function openSolventModal(id) {
+  const s = SOLVENTS.find(x => x.id === id);
+  if (!s) return;
+  currentModalProduct = null;
+  document.getElementById('mTitle').textContent = s.name;
+  document.getElementById('mEn').textContent = s.lineC;
+  document.getElementById('mCas').textContent = 'Flash Pt ' + s.flash + '°C';
+  document.getElementById('mCat').textContent = s.lineC;
+  document.getElementById('mIngredient').textContent = '密度 ' + s.density + ' kg/m³ | 黏度 ' + s.visc + ' mPa·s';
+  document.getElementById('mConc').textContent = 'IBP ' + s.ibp + '°C → FBP ' + s.fbp + '°C';
+  document.getElementById('mSource').textContent = s.bio ? '♻️ 可生物降解（OECD 301B）' : '— 非生物降解';
+  document.getElementById('mDomain').textContent = '碳氫溶劑';
+  document.getElementById('mMech').textContent = '芳香烴含量：' + s.arom + '% | 閃點（TCC）：' + s.flash + '°C | 沸程：' + s.ibp + '~' + s.fbp + '°C';
+  document.getElementById('mNote').textContent = s.apps;
+  document.getElementById('mComp').textContent = '碳氫溶劑不屬於水處理化學品，無需依台灣毒化物管理法申報（惟閃點<23°C者適用消防法令易燃液體管理）。';
+  document.getElementById('mAddBtn').style.display = 'none';
+  document.getElementById('detailModal').classList.add('open');
+}
+
+// ==================== CATALOG TAB RENDER ====================
+const CAT_ICONS = {lube:'🔧',resin:'🎨',medical:'💊',refrig:'❄️',specialty:'⚗️',hardware:'🔩',aviation:'✈️'};
+
+function renderCatTab(tab) {
+  const container = document.getElementById('tab-' + tab);
+  if (!container) return;
+  const products = CAT_PRODUCTS[tab] || [];
+  const filtered = products.filter(name => {
+    if (!searchTerm) return true;
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  const icon = CAT_ICONS[tab] || '📦';
+  const domainName = DOMAIN_NAMES[tab] || tab;
+  let html = `<div class="cat-bar">
+    <span class="cat-label">${icon} ${domainName}</span>
+    <span style="font-size:12px;color:var(--gray-500);margin-left:8px;">共 ${filtered.length} 項產品</span>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl-${tab}">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>產品名稱 / Product Name</th>
+          <th style="width:140px;">類別</th>
+          <th style="width:140px;">詢價操作</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-${tab}">`;
+  if (filtered.length === 0) {
+    html += `<tr class="empty-row"><td colspan="4">🔍 未找到符合條件的品項</td></tr>`;
+  } else {
+    filtered.forEach((name, idx) => {
+      const id = tab + '_' + idx;
+      const inInq = inquiryList.find(i => i.id === id);
+      html += `<tr id="row-${id}" class="${inInq?'selected':''}">
+        <td style="color:var(--gray-400);font-size:12px;">${idx+1}</td>
+        <td><div class="td-name">${name}</div></td>
+        <td><span class="badge badge-cat">${domainName}</span></td>
+        <td><button class="ctrl-btn" style="padding:4px 10px;font-size:12px;" onclick="toggleCatInquiry('${id}','${tab}',${idx},this)">${inInq?'✔ 已加入':'➕ 加入詢價'}</button></td>
+      </tr>`;
+    });
+  }
+  html += `</tbody></table></div>
+  <div class="summary-bar" id="summary-${tab}">顯示 ${filtered.length} / ${products.length} 項產品｜${domainName}</div>`;
+  container.innerHTML = html;
+}
+
+function toggleCatInquiry(id, tab, idx, btn) {
+  const name = CAT_PRODUCTS[tab][idx];
+  const inInq = inquiryList.find(i => i.id === id);
+  if (inInq) {
+    inquiryList = inquiryList.filter(i => i.id !== id);
+    btn.textContent = '➕ 加入詢價';
+    document.getElementById('row-' + id).classList.remove('selected');
+  } else {
+    inquiryList.push({id, tab, name, en: name, cas: '—', src: 'YES'});
+    btn.textContent = '✔ 已加入';
+    document.getElementById('row-' + id).classList.add('selected');
+  }
+  updateInquiryPanel();
+}
+
+const CAT_TABS = ['lube','resin','medical','refrig','specialty','hardware','aviation'];
+
+// ==================== INTERACTIONS ====================
+function switchTab(tab) {
+  currentTab = tab;
+  currentCat = 'all';
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'solvent') {
+    solventCat = 'all';
+    renderSolventTab();
+    return;
+  }
+  if (CAT_TABS.includes(tab)) {
+    renderCatTab(tab);
+    return;
+  }
+  document.querySelectorAll('#cat-bar-' + tab + ' .cat-pill').forEach(function(p,i) {
+    p.classList.toggle('active', i===0);
+  });
+  renderRows(tab);
+}
+
+function setCat(tab, cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('#cat-bar-' + tab + ' .cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderRows(tab);
+}
+
+function setSourceFilter(f) {
+  sourceFilter = f;
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  const map = {all:'filterAll', yes:'filterYes', checking:'filterCheck', toxic:'filterToxic', reg106:'filterReg106'};
+  if (map[f]) document.getElementById(map[f]).classList.add('active');
+  Object.keys(PRODUCTS).forEach(t => renderRows(t));
+}
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  searchTerm = this.value.trim();
+  Object.keys(PRODUCTS).forEach(t => renderRows(t));
+  if (currentTab === 'solvent') renderSolventRows();
+  if (CAT_TABS.includes(currentTab)) renderCatTab(currentTab);
+});
+
+function selectAllVisible(masterCb, tab) {
+  const rows = document.querySelectorAll('#tbody-' + tab + ' .row-cb');
+  rows.forEach(cb => {
+    cb.checked = masterCb.checked;
+    const rowId = cb.closest('tr').id.replace('row-','');
+    if (masterCb.checked) addToInquiry(rowId, tab);
+    else removeFromInquiry(rowId);
+  });
+  renderRows(tab);
+  updateInquiryPanel();
+}
+
+// ==================== MODAL ====================
+function openModal(id, tab) {
+  const p = PRODUCTS[tab].find(x => x.id === id);
+  if (!p) return;
+  currentModalProduct = {p, tab};
+  document.getElementById('mTitle').textContent = p.zh;
+  document.getElementById('mEn').textContent = p.en;
+  document.getElementById('mCas').textContent = p.cas;
+  document.getElementById('mCat').textContent = p.cat;
+  document.getElementById('mIngredient').textContent = p.ingredient;
+  document.getElementById('mConc').textContent = p.conc;
+  document.getElementById('mDomain').textContent = DOMAIN_NAMES[tab];
+  const srcText = p.src === 'YES' ? '✅ 可供應' : p.src === 'CHECKING' ? '🔍 確認中（洽業務確認）' : '— 暫無';
+  document.getElementById('mSource').textContent = srcText;
+  document.getElementById('mMech').textContent = p.mech;
+  document.getElementById('mNote').textContent = p.note;
+  const {toxic, reg} = getComplianceInfo(p);
+  let compLines = [];
+  if (toxic) compLines.push('⚠️ 毒性及關注化學物質：列管編號 ' + toxic.no + '（' + toxic.zh + '，' + toxic.level + '）。運作前須向環境部申請許可，並備妥緊急應變計畫。');
+  if (reg)   compLines.push('📋 既有化學物質登錄清單：編號 ' + reg.no + '（' + reg.zh + '）。需依法完成年度申報義務。');
+  if (!toxic && !reg) compLines.push('✓ 未列入毒性及關注化學物質（344項）及既有化學物質登錄清單（106項）。一般化學品管理規範適用，採購門檻較低。');
+  document.getElementById('mComp').textContent = compLines.join('\n');
+  document.getElementById('mAddBtn').style.display = '';
+  const inList = inquiryList.find(i => i.id === id);
+  const addBtn = document.getElementById('mAddBtn');
+  addBtn.textContent = inList ? '✔ 已在詢價清單' : '➕ 加入詢價清單';
+  addBtn.style.background = inList ? '#64748b' : '';
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('detailModal')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.getElementById('mAddBtn').style.display = '';
+  currentModalProduct = null;
+}
+function addToInquiryFromModal() {
+  if (!currentModalProduct) return;
+  const {p, tab} = currentModalProduct;
+  addToInquiry(p.id, tab);
+  document.getElementById('mAddBtn').textContent = '✔ 已在詢價清單';
+  document.getElementById('mAddBtn').style.background = '#64748b';
+  renderRows(tab);
+  updateInquiryPanel();
+}
+
+// ==================== INQUIRY ====================
+function addToInquiry(id, tab) {
+  if (inquiryList.find(i => i.id === id)) return;
+  const p = PRODUCTS[tab].find(x => x.id === id);
+  if (p) inquiryList.push({id, tab, name: p.zh, en: p.en, cas: p.cas, src: p.src, conc: p.conc});
+  updateInquiryPanel();
+}
+function removeFromInquiry(id) {
+  inquiryList = inquiryList.filter(i => i.id !== id);
+  updateInquiryPanel();
+}
+function toggleInquiryItem(id, tab, cb) {
+  if (cb.checked) addToInquiry(id, tab);
+  else removeFromInquiry(id);
+  const row = document.getElementById('row-' + id);
+  if (row) row.classList.toggle('selected', cb.checked);
+  updateInquiryPanel();
+}
+function updateInquiryPanel() {
+  const cnt = inquiryList.length;
+  document.getElementById('floatCount').textContent = cnt;
+  const list = document.getElementById('inqList');
+  if (cnt === 0) {
+    list.innerHTML = '<div class="inq-empty">尚未加入任何品項</div>';
+  } else {
+    list.innerHTML = inquiryList.map(i => `
+      <div class="inq-item">
+        <div>
+          <div style="font-weight:600;font-size:12px;">${i.name}</div>
+          <div style="font-size:11px;color:var(--gray-500);">${i.cas} · ${DOMAIN_NAMES[i.tab]||i.tab}</div>
+        </div>
+        <button class="inq-remove" onclick="removeFromInquiry('${i.id}');renderRows('${i.tab}');" title="移除">✕</button>
+      </div>`).join('');
+  }
+}
+function toggleInquiry() {
+  document.getElementById('inquiryPanel').classList.toggle('open');
+}
+function exportInquiry() {
+  if (inquiryList.length === 0) { alert('詢價清單為空'); return; }
+  const header = '序號,化學品名稱,英文名稱,CAS No.,應用領域,典型使用濃度,供應狀態\n';
+  const rows = inquiryList.map((i,idx) => {
+    const isCat = CAT_TABS.includes(i.tab);
+    const p = (!isCat && PRODUCTS[i.tab]) ? PRODUCTS[i.tab].find(x=>x.id===i.id) : null;
+    const src = i.src==='YES'?'可供應':i.src==='CHECKING'?'確認中':'暫無';
+    return `${idx+1},"${i.name}","${i.en}","${i.cas}","${DOMAIN_NAMES[i.tab]||i.tab}","${p?p.conc:''}","${src}"`;
+  }).join('\n');
+  const csv = header + rows;
+  navigator.clipboard.writeText(csv).then(() => {
+    alert('✅ 已複製 ' + inquiryList.length + ' 項詢價清單到剪貼簿！\n可直接貼入 Excel 或 Email。');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = csv;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('✅ 已複製 ' + inquiryList.length + ' 項詢價清單！');
+  });
+}
+
+// ==================== INIT ====================
+Object.keys(PRODUCTS).forEach(tab => renderTab(tab));
+Object.keys(PRODUCTS).forEach(tab => renderRows(tab));
+document.getElementById('tab-cooling').classList.add('active');
+Object.keys(PRODUCTS).forEach(tab => {
+  const el = document.getElementById('cnt-' + tab);
+  if (el) el.textContent = PRODUCTS[tab].length;
+});
+document.getElementById('cnt-solvent').textContent = SOLVENTS.length;
+CAT_TABS.forEach(tab => {
+  const el = document.getElementById('cnt-' + tab);
+  if (el && CAT_PRODUCTS[tab]) el.textContent = CAT_PRODUCTS[tab].length;
+});
+</script>
+</body>
+</html>
